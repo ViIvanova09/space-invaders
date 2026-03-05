@@ -48,14 +48,14 @@ console.log(
 
         await Assets.init({ manifest });
         await Assets.loadBundle(["bird", "spineboyData", "spineboyAtlas", "pixieData", "pixieAtlas"]);
-
+        await Assets.load(['assets/spaceShip.png']);
 
         document.body.appendChild(app.canvas);
 
         resizeCanvas();
 
         const birdFromSprite = createBird();
-        const spaceShip = await addSpaceShip();
+        const spaceShip = addSpaceShip();
 
         const spineExample = await getSpine();
     
@@ -67,9 +67,16 @@ console.log(
 
     function resizeCanvas(): void {
         const resize = () => {
+
+
+            const scale = Math.min(window.innerHeight / gameHeight,
+                window.innerWidth / gameWidth)
+
             app.renderer.resize(window.innerWidth, window.innerHeight);
-            app.stage.scale.x = window.innerWidth / gameWidth;
-            app.stage.scale.y = window.innerHeight / gameHeight;
+
+                app.stage.scale.set(scale);
+                app.stage.x = (window.innerWidth - gameWidth * scale) / 2;
+                app.stage.y = (window.innerHeight - gameHeight * scale) / 2;
         };
 
         resize();

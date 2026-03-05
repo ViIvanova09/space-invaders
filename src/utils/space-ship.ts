@@ -1,7 +1,8 @@
 import { Assets, Sprite } from "pixi.js";
 
- export async function addSpaceShip(): Promise <Sprite> {
-    const texture = await Assets.load('assets/spaceShip.png');
+ export function addSpaceShip(): Sprite {
+    const texture = Assets.get('assets/spaceShip.png');
+
     const ship = new Sprite(texture);
 
     ship.anchor.set(0.5);
