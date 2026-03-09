@@ -1,14 +1,11 @@
 import "./style.css";
-import { Application, Assets, AssetsManifest } from "pixi.js";
+import { Application, Assets, AssetsManifest, Container } from "pixi.js";
 import "@esotericsoftware/spine-pixi-v8";
 
-import { getSpine } from "./utils/spine-example";
 import { createBird } from "./utils/create-bird";
-import { addSpaceShip } from "./utils/space-ship";
-
-
-const gameWidth = 1280;
-const gameHeight = 720;
+import { addMovment, addSpaceShip } from "./utils/space-ship";
+import { GAME_HEIGHT, GAME_WIDTH } from "./utils/constants";
+import { addBullets, shootingBullets } from "./utils/bullets";
 
 console.log(
     `%cPixiJS V8\nTypescript Boilerplate%c ${VERSION} %chttp://www.pixijs.com %c❤️`,
@@ -21,34 +18,25 @@ console.log(
 (async () => {
     const app = new Application();
 
+    const world = new Container();
+
     //await window load
     await new Promise((resolve) => {
         window.addEventListener("load", resolve);
     });
 
-    await app.init({ backgroundColor: "#212842", width: gameWidth, height: gameHeight });
+    await app.init({ backgroundColor: "#212842", width: GAME_WIDTH, height: GAME_HEIGHT });
 
     await loadGameAssets();
 
     async function loadGameAssets(): Promise<void> {
-        
         const manifest = {
-            bundles: [
-                { name: "bird", assets: [{ alias: "bird", src: "./assets/simpleSpriteSheet.json" }] },
-                {
-                    name: "spineboyData",
-                    assets: [{ alias: "spineboyData", src: "./assets/spine-assets/spineboy-pro.skel" }],
-                },
-                {
-                    name: "spineboyAtlas",
-                    assets: [{ alias: "spineboyAtlas", src: "./assets/spine-assets/spineboy-pma.atlas" }],
-                },
-            ],
-        }satisfies AssetsManifest;
+            bundles: [{ name: "bird", assets: [{ alias: "bird", src: "./assets/simpleSpriteSheet.json" }] }],
+        } satisfies AssetsManifest;
 
         await Assets.init({ manifest });
-        await Assets.loadBundle(["bird", "spineboyData", "spineboyAtlas", "pixieData", "pixieAtlas"]);
-        await Assets.load(['assets/spaceShip.png']);
+        await Assets.loadBundle(["bird", "pixieData", "pixieAtlas"]);
+        await Assets.load(["assets/spaceShip.png"]);
 
         document.body.appendChild(app.canvas);
 
@@ -56,27 +44,41 @@ console.log(
 
         const birdFromSprite = createBird();
         const spaceShip = addSpaceShip();
+        
+        let shooting = true;
 
-        const spineExample = await getSpine();
-    
-        app.stage.addChild(birdFromSprite);
-        app.stage.addChild(spaceShip);
-        app.stage.addChild(spineExample);
+        window.addEventListener("keydown", (e) => {
+            if (e.code === "Space" && shooting) {
+                addBullets(spaceShip, app);
+                shooting = false;
+                setTimeout(() => {
+                    shooting = true;
+                }, 200);
+            }
+        });
+        app.stage.addChild(world);
+        world.addChild(birdFromSprite);
+        world.addChild(spaceShip);
 
+        app.ticker.add(() => {
+            addMovment(spaceShip);
+            shootingBullets();
+        });
     }
 
     function resizeCanvas(): void {
         const resize = () => {
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
 
+            app.renderer.resize(screenWidth, screenHeight);
 
-            const scale = Math.min(window.innerHeight / gameHeight,
-                window.innerWidth / gameWidth)
+            const scale = Math.min(screenWidth / GAME_WIDTH, screenHeight / GAME_HEIGHT);
 
-            app.renderer.resize(window.innerWidth, window.innerHeight);
+            world.scale.set(scale);
 
-                app.stage.scale.set(scale);
-                app.stage.x = (window.innerWidth - gameWidth * scale) / 2;
-                app.stage.y = (window.innerHeight - gameHeight * scale) / 2;
+            world.x = (screenWidth - GAME_WIDTH * scale) / 2;
+            world.y = (screenHeight - GAME_HEIGHT * scale) / 2;
         };
 
         resize();
