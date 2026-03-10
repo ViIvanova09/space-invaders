@@ -37,7 +37,7 @@ window.addEventListener("keyup", (e) => {
     }
 });
 
-export function addMovment(ship: Sprite) {
+export function addMovement(ship: Sprite) {
     const speed = 5;
 
     if (keys.arrowLeft) {

@@ -2,8 +2,7 @@ import "./style.css";
 import { Application, Assets, AssetsManifest, Container } from "pixi.js";
 import "@esotericsoftware/spine-pixi-v8";
 
-import { createBird } from "./utils/create-bird";
-import { addMovment, addSpaceShip } from "./utils/space-ship";
+import { addMovement, addSpaceShip } from "./utils/space-ship";
 import { GAME_HEIGHT, GAME_WIDTH } from "./utils/constants";
 import { addBullets, shootingBullets } from "./utils/bullets";
 
@@ -16,7 +15,7 @@ console.log(
 );
 
 (async () => {
-    const app = new Application();
+    const app = new Application(); //It is the main controller of the entire game.
 
     const world = new Container();
 
@@ -42,26 +41,24 @@ console.log(
 
         resizeCanvas();
 
-        const birdFromSprite = createBird();
         const spaceShip = addSpaceShip();
         
-        let shooting = true;
+        let isShooting = true;
 
         window.addEventListener("keydown", (e) => {
-            if (e.code === "Space" && shooting) {
-                addBullets(spaceShip, app);
-                shooting = false;
+            if (e.code === "Space" && isShooting) {
+                addBullets(spaceShip, app); // calls the function 
+                isShooting = false;
                 setTimeout(() => {
-                    shooting = true;
+                    isShooting = true;
                 }, 200);
             }
         });
-        app.stage.addChild(world);
-        world.addChild(birdFromSprite);
+        app.stage.addChild(world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
         world.addChild(spaceShip);
 
         app.ticker.add(() => {
-            addMovment(spaceShip);
+            addMovement(spaceShip);
             shootingBullets();
         });
     }

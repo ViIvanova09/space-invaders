@@ -8,11 +8,11 @@ export function addBullets(ship: Sprite, app: Application) {
 
     bullet.rect(-2, -10, 4, 12);
     bullet.fill({ color: 0xff0000 });
-    bullet.position.set(ship.x, ship.y - ship.height); //480, 478.8
+    bullet.position.set(ship.x + 200, ship.y - ship.height); //480, 478.8
 
     bullets.push(bullet);
 
-    app.stage.addChild(bullet);
+    app.stage.addChild(bullet); //rendering the bullets that is a problem make a console log to see 
 }
 
 export function shootingBullets() {
