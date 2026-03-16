@@ -1,5 +1,5 @@
 import "./style.css";
-import { Application, Assets, AssetsManifest, Container } from "pixi.js";
+import { Application, Assets, AssetsManifest, Container, Sprite } from "pixi.js";
 import "@esotericsoftware/spine-pixi-v8";
 
 import { addMovement, addSpaceShip } from "./utils/space-ship";
@@ -11,13 +11,12 @@ console.log(
     "background: #ff66a1; color: #FFFFFF; padding: 2px 4px; border-radius: 2px; font-weight: bold;",
     "color: #D81B60; font-weight: bold;",
     "color: #C2185B; font-weight: bold; text-decoration: underline;",
-    //     "color: #ff66a1;",
 );
 
 (async () => {
     const app = new Application(); //It is the main controller of the entire game.
 
-    const world = new Container();
+    const world = new Container(); //
 
     //await window load
     await new Promise((resolve) => {
@@ -30,36 +29,49 @@ console.log(
 
     async function loadGameAssets(): Promise<void> {
         const manifest = {
-            bundles: [{ name: "bird", assets: [{ alias: "bird", src: "./assets/simpleSpriteSheet.json" }] }],
+            bundles: [{ name: "space-ship", assets: [{ alias: "ship", src: "assets/spaceShip.png" }] }],
         } satisfies AssetsManifest;
 
         await Assets.init({ manifest });
-        await Assets.loadBundle(["bird", "pixieData", "pixieAtlas"]);
-        await Assets.load(["assets/spaceShip.png"]);
+        await Assets.loadBundle(["space-ship", "pixieData", "pixieAtlas"]);
+        // await Assets.load(["assets/spaceShip.png"]);
 
         document.body.appendChild(app.canvas);
 
         resizeCanvas();
 
         const spaceShip = addSpaceShip();
-        
-        let isShooting = true;
+        let canShoot = true;
 
         window.addEventListener("keydown", (e) => {
-            if (e.code === "Space" && isShooting) {
-                addBullets(spaceShip, app); // calls the function 
-                isShooting = false;
+            if (e.code === "Space" && canShoot) {
+                addBullets(spaceShip, world); // calls the function
+                canShoot = false;
                 setTimeout(() => {
-                    isShooting = true;
-                }, 200);
+                    canShoot = true;
+                }, 700);
             }
         });
+    function addMouseMovment(app: Application, ship: Sprite) {
+    let mouseX = app.screen.width / 2;
+    const ease = 0.5;
+
+    // app.stage.interactive = true;
+    app.stage.eventMode = "static";
+    app.stage.on("globalpointermove", (e) => {
+        // ship.x = e.global.x;
+        mouseX = e.global.x;
+        ship.x += (mouseX - ship.x) * ease;
+    });
+}
         app.stage.addChild(world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
         world.addChild(spaceShip);
+        // addMouseMovment(app, spaceShip);
 
         app.ticker.add(() => {
             addMovement(spaceShip);
-            shootingBullets();
+            shootingBullets(world);
+            addMouseMovment(app, spaceShip)
         });
     }
 

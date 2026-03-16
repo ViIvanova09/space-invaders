@@ -1,23 +1,36 @@
-import { Application, Graphics, Sprite } from "pixi.js";
-// import { addSpaceShip } from "./space-ship";
+import { Container, Graphics, Sprite } from "pixi.js";
 
 const bullets: Graphics[] = [];
 
-export function addBullets(ship: Sprite, app: Application) {
+
+export function addBullets(ship: Sprite, world: Container ) {
     const bullet = new Graphics();
 
-    bullet.rect(-2, -10, 4, 12);
+
+    bullet.rect(-2 , -10, 2, 10);
     bullet.fill({ color: 0xff0000 });
-    bullet.position.set(ship.x + 200, ship.y - ship.height); //480, 478.8
+
+    bullet.position.set(ship.x, ship.y - 30); 
+   
 
     bullets.push(bullet);
 
-    app.stage.addChild(bullet); //rendering the bullets that is a problem make a console log to see 
+    world.addChild(bullet);
+
 }
 
-export function shootingBullets() {
-    bullets.forEach((bullet) => {
-        bullet.y -= 8;
-    });
-    
+export function shootingBullets(world: Container){
+    for(let i = bullets.length - 1; i >= 0; i--){
+        const bullet = bullets[i];
+
+         bullet.y -= 8; 
+         if(bullet.y < 0){
+            world.removeChild(bullet);
+            bullet.destroy();
+            bullets.splice(i, 1);
+         }
+    }
 }
+// [0, 1, 2, 4]
+
+

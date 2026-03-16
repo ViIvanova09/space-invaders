@@ -1,4 +1,4 @@
-import { Assets, Sprite } from "pixi.js";
+import { Application, Assets, Sprite } from "pixi.js";
 import { GAME_HEIGHT, GAME_WIDTH } from "./constants";
 
 const keys = {
@@ -48,5 +48,5 @@ export function addMovement(ship: Sprite) {
         ship.x += speed;
     }
 
-    ship.x = Math.max(30, Math.min(GAME_WIDTH - 30, ship.x));
+    ship.x = Math.max(30, Math.min(GAME_WIDTH - 30, ship.x)); // clamping setting boundaries 
 }
