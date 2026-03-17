@@ -1,8 +1,8 @@
 import "./style.css";
-import { Application, Assets, AssetsManifest, Container, Sprite } from "pixi.js";
+import { Application, Assets, AssetsManifest, Container } from "pixi.js";
 import "@esotericsoftware/spine-pixi-v8";
 
-import { addMovement, addSpaceShip } from "./utils/space-ship";
+import { addMouseMovement, addMovement, addSpaceShip } from "./utils/space-ship";
 import { GAME_HEIGHT, GAME_WIDTH } from "./utils/constants";
 import { addBullets, shootingBullets } from "./utils/bullets";
 
@@ -52,26 +52,20 @@ console.log(
                 }, 700);
             }
         });
-    function addMouseMovment(app: Application, ship: Sprite) {
-    let mouseX = app.screen.width / 2;
-    const ease = 0.5;
 
-    // app.stage.interactive = true;
-    app.stage.eventMode = "static";
-    app.stage.on("globalpointermove", (e) => {
-        // ship.x = e.global.x;
-        mouseX = e.global.x;
-        ship.x += (mouseX - ship.x) * ease;
-    });
-}
+        app.stage.eventMode = "static";
+        let mouseX = 0;
+
+        app.stage.on("globalpointermove", (e) => { // check the pixi documentation
+            mouseX = e.global.x;
+        });
         app.stage.addChild(world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
         world.addChild(spaceShip);
-        // addMouseMovment(app, spaceShip);
 
         app.ticker.add(() => {
             addMovement(spaceShip);
             shootingBullets(world);
-            addMouseMovment(app, spaceShip)
+            addMouseMovement(spaceShip, mouseX);
         });
     }
 
