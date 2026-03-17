@@ -2,7 +2,7 @@ import "./style.css";
 import { Application, Assets, AssetsManifest, Container } from "pixi.js";
 import "@esotericsoftware/spine-pixi-v8";
 
-import { addMouseMovement, addMovement, addSpaceShip } from "./utils/space-ship";
+import { addMovement, addSpaceShip } from "./utils/space-ship";
 import { GAME_HEIGHT, GAME_WIDTH } from "./utils/constants";
 import { addBullets, shootingBullets } from "./utils/bullets";
 
@@ -17,6 +17,8 @@ console.log(
     const app = new Application(); //It is the main controller of the entire game.
 
     const world = new Container(); //
+
+    // const hitArea = new Rectangle(0, 0, 100, 100);
 
     //await window load
     await new Promise((resolve) => {
@@ -53,24 +55,19 @@ console.log(
             }
         });
 
-        app.stage.eventMode = "static";
-        let mouseX = 0;
-
-        app.stage.on("globalpointermove", (e) => { // check the pixi documentation
-            mouseX = e.global.x;
-        });
         app.stage.addChild(world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
         world.addChild(spaceShip);
 
         app.ticker.add(() => {
-            addMovement(spaceShip);
             shootingBullets(world);
-            addMouseMovement(spaceShip, mouseX);
+            // addMouseMovement(spaceShip, mouseX);
+            addMovement(spaceShip);
         });
     }
 
     function resizeCanvas(): void {
         const resize = () => {
+            
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
 

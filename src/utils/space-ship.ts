@@ -17,24 +17,30 @@ export function addSpaceShip(): Sprite {
 
     return ship;
 }
-window.addEventListener("keydown", (e) => {
-    if (e.code === "ArrowLeft") {
+export function keyDownMovment(key: string) {
+    if (key === "ArrowLeft") {
         keys.arrowLeft = true;
     }
 
-    if (e.code === "ArrowRight") {
+    if (key === "ArrowRight") {
         keys.arrowRight = true;
     }
-});
-
-window.addEventListener("keyup", (e) => {
-    if (e.code === "ArrowLeft") {
+}
+export function keyUpMovment(key: string) {
+    if (key === "ArrowLeft") {
         keys.arrowLeft = false;
     }
 
-    if (e.code === "ArrowRight") {
+    if (key === "ArrowRight") {
         keys.arrowRight = false;
     }
+}
+window.addEventListener("keydown", (e) => {
+    keyDownMovment(e.key);
+});
+
+window.addEventListener("keyup", (e) => {
+    keyUpMovment(e.key);
 });
 
 export function addMovement(ship: Sprite) {
@@ -53,8 +59,6 @@ export function addMovement(ship: Sprite) {
 
 export function addMouseMovement(ship: Sprite, mouseX: number) {
     ship.x = mouseX;
-    // ship.x += (mouseX - ship.x) * 0.2;
-    // ship.x = mouseX + 5;
     const halfWidth = ship.width / 2;
 
     if (ship.x < halfWidth) {
@@ -65,3 +69,19 @@ export function addMouseMovement(ship: Sprite, mouseX: number) {
         ship.x = GAME_WIDTH - halfWidth;
     }
 }
+
+// app.stage.eventMode = "static";
+// let mouseX = 0;
+
+// app.stage.on("globalpointermove", (e) => {
+//     // check the pixi documentation
+//     mouseX = e.global.x;
+// });
+
+// export function addMouseMovement(ship: Sprite) {
+//     const mouseX = GAME_WIDTH / 2;
+//     const ease = 0.5;
+
+//     ship.x += (mouseX - ship.x) * ease;
+
+// }
