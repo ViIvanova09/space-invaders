@@ -1,7 +1,7 @@
 import { Assets, Sprite } from "pixi.js";
 import { GAME_HEIGHT, GAME_WIDTH } from "./constants";
 
-const keys = {
+const commands = {
     arrowLeft: false,
     arrowRight: false,
 };
@@ -17,71 +17,43 @@ export function addSpaceShip(): Sprite {
 
     return ship;
 }
-export function keyDownMovment(key: string) {
+export function keyDownMovement(key: string) {
     if (key === "ArrowLeft") {
-        keys.arrowLeft = true;
+        commands.arrowLeft = true;
     }
 
     if (key === "ArrowRight") {
-        keys.arrowRight = true;
+        commands.arrowRight = true;
     }
 }
-export function keyUpMovment(key: string) {
+
+export function keyUpMovement(ship: Sprite, key: string) {
     if (key === "ArrowLeft") {
-        keys.arrowLeft = false;
+        commands.arrowLeft = false;
     }
 
     if (key === "ArrowRight") {
-        keys.arrowRight = false;
+        commands.arrowRight = false;
     }
 }
-window.addEventListener("keydown", (e) => {
-    keyDownMovment(e.key);
-});
-
-window.addEventListener("keyup", (e) => {
-    keyUpMovment(e.key);
-});
 
 export function addMovement(ship: Sprite) {
     const speed = 5;
 
-    if (keys.arrowLeft) {
+    if (commands.arrowLeft) {
         ship.x -= speed;
     }
 
-    if (keys.arrowRight) {
+    if (commands.arrowRight) {
         ship.x += speed;
     }
 
-    ship.x = Math.max(30, Math.min(GAME_WIDTH - 30, ship.x)); // clamping setting boundaries
+    setBounaries(ship);
 }
 
-export function addMouseMovement(ship: Sprite, mouseX: number) {
-    ship.x = mouseX;
+export function setBounaries(ship: Sprite) {
+    // clamping setting boundaries
     const halfWidth = ship.width / 2;
 
-    if (ship.x < halfWidth) {
-        ship.x = halfWidth;
-    }
-
-    if (ship.x > GAME_WIDTH - halfWidth) {
-        ship.x = GAME_WIDTH - halfWidth;
-    }
+    ship.x = Math.max(halfWidth, Math.min(GAME_WIDTH - halfWidth, ship.x));
 }
-
-// app.stage.eventMode = "static";
-// let mouseX = 0;
-
-// app.stage.on("globalpointermove", (e) => {
-//     // check the pixi documentation
-//     mouseX = e.global.x;
-// });
-
-// export function addMouseMovement(ship: Sprite) {
-//     const mouseX = GAME_WIDTH / 2;
-//     const ease = 0.5;
-
-//     ship.x += (mouseX - ship.x) * ease;
-
-// }

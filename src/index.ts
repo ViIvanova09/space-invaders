@@ -2,7 +2,7 @@ import "./style.css";
 import { Application, Assets, AssetsManifest, Container } from "pixi.js";
 import "@esotericsoftware/spine-pixi-v8";
 
-import { addMovement, addSpaceShip } from "./utils/space-ship";
+import {addMovement, addSpaceShip,keyDownMovement, keyUpMovement} from "./utils/space-ship";
 import { GAME_HEIGHT, GAME_WIDTH } from "./utils/constants";
 import { addBullets, shootingBullets } from "./utils/bullets";
 
@@ -16,9 +16,7 @@ console.log(
 (async () => {
     const app = new Application(); //It is the main controller of the entire game.
 
-    const world = new Container(); //
-
-    // const hitArea = new Rectangle(0, 0, 100, 100);
+    const world = new Container(); // // This is the main container that holds everything in the game. And everything you want to see must be added to the stage
 
     //await window load
     await new Promise((resolve) => {
@@ -36,7 +34,6 @@ console.log(
 
         await Assets.init({ manifest });
         await Assets.loadBundle(["space-ship", "pixieData", "pixieAtlas"]);
-        // await Assets.load(["assets/spaceShip.png"]);
 
         document.body.appendChild(app.canvas);
 
@@ -46,6 +43,8 @@ console.log(
         let canShoot = true;
 
         window.addEventListener("keydown", (e) => {
+            keyDownMovement(e.key);
+
             if (e.code === "Space" && canShoot) {
                 addBullets(spaceShip, world); // calls the function
                 canShoot = false;
@@ -55,19 +54,21 @@ console.log(
             }
         });
 
+        window.addEventListener("keyup", (e) => {
+            keyUpMovement(spaceShip, e.key);
+        });
+
         app.stage.addChild(world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
         world.addChild(spaceShip);
 
         app.ticker.add(() => {
-            shootingBullets(world);
-            // addMouseMovement(spaceShip, mouseX);
             addMovement(spaceShip);
+            shootingBullets(world);
         });
     }
 
     function resizeCanvas(): void {
         const resize = () => {
-            
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
 
