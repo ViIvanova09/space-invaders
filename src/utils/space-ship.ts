@@ -1,59 +1,63 @@
-import { Assets, Sprite } from "pixi.js";
-import { GAME_HEIGHT, GAME_WIDTH } from "./constants";
+import { Application, Assets, Sprite } from "pixi.js";
 
-const commands = {
-    arrowLeft: false,
-    arrowRight: false,
-};
+export class SpaceShip {
+    sprite;
+    arrowLeft;
+    arrowRight;
+    speed;
+    halfWidth;
 
-export function addSpaceShip(): Sprite {
-    const texture = Assets.get("assets/spaceShip.png");
+    constructor(app: Application) {
+        const texture = Assets.get("assets/spaceShip.png");
 
-    const ship = new Sprite(texture);
+        this.sprite = new Sprite(texture);
+        this.sprite.anchor.set(0.5, 1);
+        this.sprite.position.set(app.screen.width / 2, app.screen.height - 10); //x=480, y=530
+        this.sprite.scale.set(0.15);
 
-    ship.anchor.set(0.5, 1);
-    ship.position.set(GAME_WIDTH / 2, GAME_HEIGHT - 10); //x=480, y=530
-    ship.scale.set(0.1);
+        this.arrowLeft = false;
+        this.arrowRight = false;
+        this.speed = 5;
 
-    return ship;
-}
-export function keyDownMovement(key: string) {
-    if (key === "ArrowLeft") {
-        commands.arrowLeft = true;
+        this.halfWidth = this.sprite.width / 2;        
     }
 
-    if (key === "ArrowRight") {
-        commands.arrowRight = true;
+    public getSprite() { //get sprite only return
+        return this.sprite;
     }
-}
+    
+    public keyDownMovement(key: string) {
+        if (key === "ArrowLeft") {
+            this.arrowLeft = true;
+        }
 
-export function keyUpMovement(ship: Sprite, key: string) {
-    if (key === "ArrowLeft") {
-        commands.arrowLeft = false;
+        if (key === "ArrowRight") {
+            this.arrowRight = true;
+        }
     }
+    public keyUpMovement(key: string) {
+        if (key === "ArrowLeft") {
+            this.arrowLeft = false;
+        }
 
-    if (key === "ArrowRight") {
-        commands.arrowRight = false;
+        if (key === "ArrowRight") {
+            this.arrowRight = false;
+        }
     }
-}
+    public addMovement(app: Application) {
+        if (this.arrowLeft) {
+            this.sprite.x -= this.speed;
+        }
 
-export function addMovement(ship: Sprite) {
-    const speed = 5;
+        if (this.arrowRight) {
+            this.sprite.x += this.speed;
+        }
 
-    if (commands.arrowLeft) {
-        ship.x -= speed;
+       this.setBoundaries(app);
     }
+    private setBoundaries(app: Application) {
+        // clamping setting boundaries
 
-    if (commands.arrowRight) {
-        ship.x += speed;
+        this.sprite.x = Math.max(this.halfWidth, Math.min(app.screen.width - this.halfWidth, this.sprite.x)); 
     }
-
-    setBounaries(ship);
-}
-
-export function setBounaries(ship: Sprite) {
-    // clamping setting boundaries
-    const halfWidth = ship.width / 2;
-
-    ship.x = Math.max(halfWidth, Math.min(GAME_WIDTH - halfWidth, ship.x));
 }

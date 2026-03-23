@@ -2,9 +2,10 @@ import "./style.css";
 import { Application, Assets, AssetsManifest, Container } from "pixi.js";
 import "@esotericsoftware/spine-pixi-v8";
 
-import {addMovement, addSpaceShip,keyDownMovement, keyUpMovement} from "./utils/space-ship";
+import { SpaceShip} from "./utils/space-ship";
 import { GAME_HEIGHT, GAME_WIDTH } from "./utils/constants";
-import { addBullets, shootingBullets } from "./utils/bullets";
+import { Bullet } from "./utils/bullet";
+import {Alien} from "./utils/alien";
 
 console.log(
     `%cPixiJS V8\nTypescript Boilerplate%c ${VERSION} %chttp://www.pixijs.com %c❤️`,
@@ -15,8 +16,12 @@ console.log(
 
 (async () => {
     const app = new Application(); //It is the main controller of the entire game.
-
     const world = new Container(); // // This is the main container that holds everything in the game. And everything you want to see must be added to the stage
+    const bullet = new Bullet();
+    // const aliensContainer = new Container();
+    
+
+   
 
     //await window load
     await new Promise((resolve) => {
@@ -29,41 +34,43 @@ console.log(
 
     async function loadGameAssets(): Promise<void> {
         const manifest = {
-            bundles: [{ name: "space-ship", assets: [{ alias: "ship", src: "assets/spaceShip.png" }] }],
+            bundles: [{ name: "space-ship", assets: [{ alias: "ship", src: "assets/spaceShip.png" }] }, 
+            { name: "alien", assets: [{ alias: "alien", src: "assets/alien.png" }] }],
         } satisfies AssetsManifest;
 
         await Assets.init({ manifest });
-        await Assets.loadBundle(["space-ship", "pixieData", "pixieAtlas"]);
+        await Assets.loadBundle(["space-ship", "alien", "pixieData", "pixieAtlas"]);
+
+        const spaceShip = new SpaceShip(app);
+        const alien = new Alien(app);
 
         document.body.appendChild(app.canvas);
 
-        resizeCanvas();
+       
 
-        const spaceShip = addSpaceShip();
-        let canShoot = true;
+        resizeCanvas();
+     
 
         window.addEventListener("keydown", (e) => {
-            keyDownMovement(e.key);
+                spaceShip.keyDownMovement(e.key);
 
-            if (e.code === "Space" && canShoot) {
-                addBullets(spaceShip, world); // calls the function
-                canShoot = false;
-                setTimeout(() => {
-                    canShoot = true;
-                }, 700);
+            if (e.code === "Space") { 
+                bullet.createBullet(spaceShip.getSprite(), world)
             }
         });
 
         window.addEventListener("keyup", (e) => {
-            keyUpMovement(spaceShip, e.key);
+            spaceShip.keyUpMovement(e.key);
         });
 
         app.stage.addChild(world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
-        world.addChild(spaceShip);
 
-        app.ticker.add(() => {
-            addMovement(spaceShip);
-            shootingBullets(world);
+        world.addChild(spaceShip.getSprite()); 
+        world.addChild(alien.getSprite());
+
+        app.ticker.add(() => { /// check if i can add ticker into the classes 
+            spaceShip.addMovement(app);
+            bullet.moveBullet(world)
         });
     }
 
@@ -74,12 +81,12 @@ console.log(
 
             app.renderer.resize(screenWidth, screenHeight);
 
-            const scale = Math.min(screenWidth / GAME_WIDTH, screenHeight / GAME_HEIGHT);
+            const scale = Math.min(screenWidth / app.screen.width, screenHeight / app.screen.height);
 
             world.scale.set(scale);
 
-            world.x = (screenWidth - GAME_WIDTH * scale) / 2;
-            world.y = (screenHeight - GAME_HEIGHT * scale) / 2;
+            world.x = (screenWidth - app.screen.width * scale) / 2;
+            world.y = (screenHeight - app.screen.height * scale) / 2;
         };
 
         resize();
