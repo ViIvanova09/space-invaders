@@ -1,31 +1,24 @@
-import { Application, Assets, Sprite } from "pixi.js";
+import { Application, Texture } from "pixi.js";
+import { GameElements } from "./GameElements";
 
-export class SpaceShip {
-    sprite;
+export class SpaceShip extends GameElements {
     arrowLeft;
     arrowRight;
     speed;
     halfWidth;
 
-    constructor(app: Application) {
-        const texture = Assets.get("assets/spaceShip.png");
+    constructor(texture: Texture, app: Application) {
+        super(texture, app.screen.width / 2, app.screen.height - 10); //calls the gameElements constructor
 
-        this.sprite = new Sprite(texture);
-        this.sprite.anchor.set(0.5, 1);
-        this.sprite.position.set(app.screen.width / 2, app.screen.height - 10); //x=480, y=530
-        this.sprite.scale.set(0.15);
+        this.position.set(this.x, this.y); //x=480, y=530
 
         this.arrowLeft = false;
         this.arrowRight = false;
         this.speed = 5;
 
-        this.halfWidth = this.sprite.width / 2;        
+        this.halfWidth = this.width / 2;
     }
 
-    public getSprite() { //get sprite only return
-        return this.sprite;
-    }
-    
     public keyDownMovement(key: string) {
         if (key === "ArrowLeft") {
             this.arrowLeft = true;
@@ -46,18 +39,18 @@ export class SpaceShip {
     }
     public addMovement(app: Application) {
         if (this.arrowLeft) {
-            this.sprite.x -= this.speed;
+            this.x -= this.speed;
         }
 
         if (this.arrowRight) {
-            this.sprite.x += this.speed;
+            this.x += this.speed;
         }
 
-       this.setBoundaries(app);
+        this.setBoundaries(app);
     }
     private setBoundaries(app: Application) {
         // clamping setting boundaries
 
-        this.sprite.x = Math.max(this.halfWidth, Math.min(app.screen.width - this.halfWidth, this.sprite.x)); 
+        this.x = Math.max(this.halfWidth, Math.min(app.screen.width - this.halfWidth, this.x));
     }
 }

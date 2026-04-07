@@ -1,11 +1,10 @@
 import "./style.css";
 import { Application, Assets, AssetsManifest, Container } from "pixi.js";
 import "@esotericsoftware/spine-pixi-v8";
-
-import { SpaceShip} from "./utils/space-ship";
-import { GAME_HEIGHT, GAME_WIDTH } from "./utils/constants";
-import { Bullet } from "./utils/bullet";
-import {Alien} from "./utils/alien";
+import { SpaceShip } from "./SpaceShip";
+import { GAME_HEIGHT, GAME_WIDTH } from "./Constants";
+import { Bullet } from "./Bullet";
+import {Alien} from "./Alien";
 
 console.log(
     `%cPixiJS V8\nTypescript Boilerplate%c ${VERSION} %chttp://www.pixijs.com %c❤️`,
@@ -18,10 +17,6 @@ console.log(
     const app = new Application(); //It is the main controller of the entire game.
     const world = new Container(); // // This is the main container that holds everything in the game. And everything you want to see must be added to the stage
     const bullet = new Bullet();
-    // const aliensContainer = new Container();
-    
-
-   
 
     //await window load
     await new Promise((resolve) => {
@@ -34,28 +29,29 @@ console.log(
 
     async function loadGameAssets(): Promise<void> {
         const manifest = {
-            bundles: [{ name: "space-ship", assets: [{ alias: "ship", src: "assets/spaceShip.png" }] }, 
-            { name: "alien", assets: [{ alias: "alien", src: "assets/alien.png" }] }],
+            bundles: [
+                { name: "space-ship", assets: [{ alias: "ship", src: "assets/spaceShip.png" }] },
+                { name: "alien", assets: [{ alias: "alien", src: "assets/alien.png" }] },
+            ],
         } satisfies AssetsManifest;
 
         await Assets.init({ manifest });
         await Assets.loadBundle(["space-ship", "alien", "pixieData", "pixieAtlas"]);
+        const shipTexture = Assets.get("ship");
+        const alienTexture = Assets.get("alien")
 
-        const spaceShip = new SpaceShip(app);
-        const alien = new Alien(app);
+        const spaceShip = new SpaceShip(shipTexture, app);
+        const alien = new Alien(alienTexture, app);
 
         document.body.appendChild(app.canvas);
 
-       
-
         resizeCanvas();
-     
 
         window.addEventListener("keydown", (e) => {
-                spaceShip.keyDownMovement(e.key);
+            spaceShip.keyDownMovement(e.key);
 
-            if (e.code === "Space") { 
-                bullet.createBullet(spaceShip.getSprite(), world)
+            if (e.code === "Space") {
+                bullet.createBullet(spaceShip, world);
             }
         });
 
@@ -65,12 +61,13 @@ console.log(
 
         app.stage.addChild(world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
 
-        world.addChild(spaceShip.getSprite()); 
-        world.addChild(alien.getSprite());
+        world.addChild(spaceShip);
+        world.addChild(alien);
 
-        app.ticker.add(() => { /// check if i can add ticker into the classes 
+        app.ticker.add(() => {
+            /// check if i can add ticker into the classes
             spaceShip.addMovement(app);
-            bullet.moveBullet(world)
+            bullet.moveBullet(world);
         });
     }
 
