@@ -2,7 +2,6 @@ import { Container, Graphics, Sprite } from "pixi.js";
 
 export class Bullet {
     graphics:  Graphics | null = null;
-
     constructor() {
         this.graphics = null;
     }
@@ -31,8 +30,19 @@ export class Bullet {
             }
         }
     }
-    public detectCollision(){}
+    // public detectCollision(bullet: Graphics, alien: Sprite){
+    //     if(){}
+    // }
 }
 
 //трябва да детеква колизия и кога е извън екрана и да се дестройва
-//
+//box1 - bullet
+// min.x = bullet.x
+//max.x = bullet.x - bullet.width
+//min.y = bullet.y
+//max.y = bullet.y - bullet.height
+//box2 - alien
+// min.x = alien.x
+//max.x = alien.x - alien.width
+//min.y = alien.y
+//max.y = alien.y - alien.height
