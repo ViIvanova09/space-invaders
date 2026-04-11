@@ -4,7 +4,7 @@ import "@esotericsoftware/spine-pixi-v8";
 import { SpaceShip } from "./SpaceShip";
 import { GAME_HEIGHT, GAME_WIDTH } from "./Constants";
 import { Bullet } from "./Bullet";
-import {Alien} from "./Alien";
+import { Alien } from "./Alien";
 
 console.log(
     `%cPixiJS V8\nTypescript Boilerplate%c ${VERSION} %chttp://www.pixijs.com %c❤️`,
@@ -17,6 +17,8 @@ console.log(
     const app = new Application(); //It is the main controller of the entire game.
     const world = new Container(); // // This is the main container that holds everything in the game. And everything you want to see must be added to the stage
     const bullet = new Bullet();
+    const aliens: Alien[] = [];
+    const aliensContainer = new Container(); // This container holds all the enemies
 
     //await window load
     await new Promise((resolve) => {
@@ -38,10 +40,9 @@ console.log(
         await Assets.init({ manifest });
         await Assets.loadBundle(["space-ship", "alien", "pixieData", "pixieAtlas"]);
         const shipTexture = Assets.get("ship");
-        const alienTexture = Assets.get("alien")
+        const alienTexture = Assets.get("alien");
 
         const spaceShip = new SpaceShip(shipTexture, app);
-        const alien = new Alien(alienTexture, app);
 
         document.body.appendChild(app.canvas);
 
@@ -59,14 +60,45 @@ console.log(
             spaceShip.keyUpMovement(e.key);
         });
 
+        for (let row = 0; row < 5; row++) {
+            for (let col = 0; col < 11; col++) {
+                const x1 = col * 40; // Spacing horizontally
+                const y1 = row * 30; //spacing vertically
+                const alien = new Alien(alienTexture, x1, y1);
+
+                aliens.push(alien);
+                aliensContainer.addChild(alien);
+            }
+        }
+        aliensContainer.x = 80;
+        aliensContainer.y = 60;
+        const speed = 1;
+        let direction = 1;
+
         app.stage.addChild(world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
 
         world.addChild(spaceShip);
-        world.addChild(alien);
+        world.addChild(aliensContainer);
 
         app.ticker.add(() => {
-            /// check if i can add ticker into the classes
-            spaceShip.addMovement(app);
+            const bounds = aliensContainer.getBounds();
+            
+
+            aliensContainer.x += speed * direction;
+
+            if (aliensContainer.x && bounds.right > GAME_WIDTH) {
+                console.log("hit right");
+                direction = -1;
+                aliensContainer.y += 10;
+            }
+
+            if (aliensContainer.x && bounds.left < 0) {
+                console.log("hit left");
+                direction = 1;
+                aliensContainer.y += 10;
+            }
+
+            spaceShip.shipMovement(app);
             bullet.moveBullet(world);
         });
     }

@@ -5,7 +5,6 @@ export class SpaceShip extends GameElements {
     arrowLeft;
     arrowRight;
     speed;
-    halfWidth;
 
     constructor(texture: Texture, app: Application) {
         super(texture, app.screen.width / 2, app.screen.height - 10); //calls the gameElements constructor
@@ -15,8 +14,6 @@ export class SpaceShip extends GameElements {
         this.arrowLeft = false;
         this.arrowRight = false;
         this.speed = 5;
-
-        this.halfWidth = this.width / 2;
     }
 
     public keyDownMovement(key: string) {
@@ -37,7 +34,8 @@ export class SpaceShip extends GameElements {
             this.arrowRight = false;
         }
     }
-    public addMovement(app: Application) {
+
+    public shipMovement(app: Application) {
         if (this.arrowLeft) {
             this.x -= this.speed;
         }
@@ -48,7 +46,7 @@ export class SpaceShip extends GameElements {
 
         this.setBoundaries(app);
     }
-    private setBoundaries(app: Application) {
+    protected setBoundaries(app: Application) {
         // clamping setting boundaries
 
         this.x = Math.max(this.halfWidth, Math.min(app.screen.width - this.halfWidth, this.x));

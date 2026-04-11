@@ -31,6 +31,7 @@ export class Bullet {
             }
         }
     }
+    public detectCollision(){}
 }
 
 //трябва да детеква колизия и кога е извън екрана и да се дестройва
