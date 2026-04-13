@@ -75,6 +75,26 @@ console.log(
         const speed = 1;
         let direction = 1;
 
+        function checkCollision() {
+            if (!bullet.graphics) return;
+
+            const bulletBounds = bullet.graphics.getBounds();
+
+            for(let i = 0; i < aliens.length; i++){
+                const oneEnemy = aliens[i];
+                const aliensBounds = oneEnemy.getBounds();
+
+                 if(bulletBounds.width > aliensBounds.x || bulletBounds.x < aliensBounds.width && bulletBounds.height > aliensBounds.y || bulletBounds.y < aliensBounds.height){
+                    console.log("hit")
+
+                    return true;
+                    
+                 }
+            }
+           
+        
+        }
+
         app.stage.addChild(world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
 
         world.addChild(spaceShip);
@@ -82,7 +102,6 @@ console.log(
 
         app.ticker.add(() => {
             const bounds = aliensContainer.getBounds();
-            
 
             aliensContainer.x += speed * direction;
 
@@ -97,6 +116,8 @@ console.log(
                 direction = 1;
                 aliensContainer.y += 10;
             }
+
+            checkCollision();
 
             spaceShip.shipMovement(app);
             bullet.moveBullet(world);
