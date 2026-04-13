@@ -76,15 +76,15 @@ console.log(
         let direction = 1;
 
         function checkCollision() {
-            if (!bullet.graphics) return;
+            if (!bullet.graphics) return; // check if the bullet is null 
 
-            const bulletBounds = bullet.graphics.getBounds();
+            const bulletBounds = bullet.graphics.getBounds(); //get the boundaries of the bullet box 
 
             for(let i = 0; i < aliens.length; i++){
-                const oneEnemy = aliens[i];
-                const aliensBounds = oneEnemy.getBounds();
+                const oneEnemy = aliens[i]; // as the alien is in an array we should have the index to get the alien coordinates
+                const aliensBounds = oneEnemy.getBounds();//get the boundaries of the alien box
 
-                 if(bulletBounds.width > aliensBounds.x || bulletBounds.x < aliensBounds.width && bulletBounds.height > aliensBounds.y || bulletBounds.y < aliensBounds.height){
+                 if(bulletBounds.width > aliensBounds.x || bulletBounds.x < aliensBounds.width && bulletBounds.height > aliensBounds.y || bulletBounds.y < aliensBounds.height){ // this is an interpretation of aabb formula for collision in 2d games  
                     console.log("hit")
 
                     return true;
