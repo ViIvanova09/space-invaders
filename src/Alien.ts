@@ -7,5 +7,7 @@ export class Alien extends GameElements {
         super(texture,  x * 2 , y * 2);
        
         this.position.set(this.x, this.y);
+        console.log('alien position', this.position);
+        
     }
 }

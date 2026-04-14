@@ -60,67 +60,125 @@ console.log(
             spaceShip.keyUpMovement(e.key);
         });
 
-        for (let row = 0; row < 5; row++) {
-            for (let col = 0; col < 11; col++) {
-                const x1 = col * 40; // Spacing horizontally
-                const y1 = row * 30; //spacing vertically
-                const alien = new Alien(alienTexture, x1, y1);
+        // for (let row = 0; row < 5; row++) {
+        //     for (let col = 0; col < 11; col++) {
+        //         const x1 = col * 40; // Spacing horizontally
+        //         const y1 = row * 30; //spacing vertically
+        //         const alien = new Alien(alienTexture, x1, y1);
 
-                aliens.push(alien);
-                aliensContainer.addChild(alien);
-            }
-        }
-        aliensContainer.x = 80;
-        aliensContainer.y = 60;
-        const speed = 1;
-        let direction = 1;
+        //         aliens.push(alien);
+        //         aliensContainer.addChild(alien);
+        //     }
+        // }
+        const alien = new Alien(alienTexture, 150, 200);
+
+         aliens.push(alien);
+        aliensContainer.addChild(alien)
+        // aliensContainer.x = 80;
+        // aliensContainer.y = 60;
+        // const speed = 1;
+        // let direction = 1;
+
+
+        // function enemiesMovement() {
+        //      const bounds = aliensContainer.getBounds(); //get the boundaries of the aliensContainer
+
+        //     aliensContainer.x += speed * direction;
+
+        //     if (aliensContainer.x && bounds.right > GAME_WIDTH) {
+        //         console.log("hit right");
+        //         direction = -1;
+        //         aliensContainer.y += 10;
+        //     }
+
+        //     if (aliensContainer.x && bounds.left < 0) {
+        //         console.log("hit left");
+        //         direction = 1;
+        //         aliensContainer.y += 10;
+        //     }
+        // }
 
         function checkCollision() {
             if (!bullet.graphics) return; // check if the bullet is null 
 
             const bulletBounds = bullet.graphics.getBounds(); //get the boundaries of the bullet box 
 
-            for(let i = 0; i < aliens.length; i++){
-                const oneEnemy = aliens[i]; // as the alien is in an array we should have the index to get the alien coordinates
+            //  console.log("булет",bulletBounds); //3 
+            
+            // for(let i = 0; i < aliens.length; i++){
+                const oneEnemy = alien; // we should know the index to get the alien coordinates because the alien is in an array
                 const aliensBounds = oneEnemy.getBounds();//get the boundaries of the alien box
 
-                 if(bulletBounds.width > aliensBounds.x || bulletBounds.x < aliensBounds.width && bulletBounds.height > aliensBounds.y || bulletBounds.y < aliensBounds.height){ // this is an interpretation of aabb formula for collision in 2d games  
-                    console.log("hit")
+            // console.log('алиен',aliensBounds); //52.5
+            // console.log(aliensBounds.x); // 273.75
+            // console.log(aliensBounds.y); //347.5
+            // console.log(bulletBounds.x); // 298
+            // console.log(bulletBounds.y); //390
+            // console.log(bulletBounds.height); //10
+            // console.log(aliensBounds.height);//52.5
+            
+            
+            
+            
 
-                    return true;
+            
+            
+                
+                // console.log("this is one enemy",oneEnemy);
+                
+                // console.log("alien bound", aliensBounds);
+                // console.log("bullet bound", bulletBounds);
+
+                // 3 > 273.75 || 298 < 52.5 
+                // 10 > 347.5 || 390  < 10
+
+                // const widthB = bulletBounds.maxX - bulletBounds.minX;
+                // const widthA = aliensBounds.maxX - aliensBounds.minX;
+                // const heightB = bulletBounds.maxY - bulletBounds.minY;
+                // const heightA = aliensBounds.maxY - aliensBounds.minY;
+
+                // if(widthB > aliensBounds.x || bulletBounds.x > widthA &&
+                //      heightB > aliensBounds.y || bulletBounds.y < heightA){ // this is an interpretation of aabb formula for collision in 2d games  
+                //     console.log("hit")
+                   
+                //     }
+
+                if(bulletBounds.maxX > aliensBounds.minX && aliensBounds.maxX > bulletBounds.minX && 
+                    bulletBounds.maxY > aliensBounds.minY && bulletBounds.minY < aliensBounds.maxY
+                ){
+                    console.log("hit");
                     
-                 }
+                }
+
+                //  if(bulletBounds.width > aliensBounds.x || bulletBounds.x < aliensBounds.width &&
+                //      bulletBounds.height > aliensBounds.y || bulletBounds.y < aliensBounds.height){ // this is an interpretation of aabb formula for collision in 2d games  
+                //     console.log("hit")
+ 
+                //  }
+
+
+                    // //  aliensContainer.removeChild(oneEnemy);
+                    // aliens.splice(i, 1)
+                    
+                    // return
+                    
+                //  }
+
             }
-           
-        
-        }
+
 
         app.stage.addChild(world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
 
         world.addChild(spaceShip);
         world.addChild(aliensContainer);
-
+        // checkCollision();
         app.ticker.add(() => {
-            const bounds = aliensContainer.getBounds();
 
-            aliensContainer.x += speed * direction;
-
-            if (aliensContainer.x && bounds.right > GAME_WIDTH) {
-                console.log("hit right");
-                direction = -1;
-                aliensContainer.y += 10;
-            }
-
-            if (aliensContainer.x && bounds.left < 0) {
-                console.log("hit left");
-                direction = 1;
-                aliensContainer.y += 10;
-            }
-
+            // enemiesMovement();
             checkCollision();
 
             spaceShip.shipMovement(app);
-            bullet.moveBullet(world);
+            // bullet.moveBullet(world);
         });
     }
 

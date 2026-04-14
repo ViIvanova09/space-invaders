@@ -16,7 +16,10 @@ export class Bullet {
         this.graphics.rect(-2, -10, 3, 10);
         this.graphics.fill({ color: 0xff0000 });
 
-        this.graphics.position.set(ship.x, ship.y - 30);
+        // this.graphics.position.set(ship.x, ship.y - 30);
+        this.graphics.position.set(270, 390)
+        console.log('bullet',this.graphics.position);
+        
 
         world.addChild(this.graphics); // add the bullet into the container(stage)
     }
