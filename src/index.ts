@@ -61,37 +61,31 @@ console.log(
             spaceShip.keyUpMovement(e.key);
         });
 
-        // for (let row = 0; row < 5; row++) {
-        //     for (let col = 0; col < 11; col++) {
-        //         const x1 = col * 40; // Spacing horizontally
-        //         const y1 = row * 30; //spacing vertically
-        //         const alien = new Alien(alienTexture, x1, y1);
+        for (let row = 0; row < 5; row++) {
+            for (let col = 0; col < 11; col++) {
+                const x1 = col * 40; // Spacing horizontally
+                const y1 = row * 30; //spacing vertically
+                const alien = new Alien(alienTexture, x1, y1);
 
-        //         aliens.push(alien);
-        //         aliensContainer.addChild(alien);
-        //     }
-        // }
-        // const timeout = 30;
-
-         const alien = new Alien(alienTexture, 300, 100);
-
-         aliens.push(alien);
-        aliensContainer.addChild(alien);
-
-        function enemyBulletSystem(){
-            bullet.createEnemyBullet(world, alien);
-           
-            //     for(let i = 0; i < aliens.length; i++){
-            //     const alien = aliens[i];
-
-                
-            // }
+                aliens.push(alien);
+                aliensContainer.addChild(alien);
+            }
         }
+     
+        // console.log("length",aliens.length); // 55
+        
+        //  const alien = new Alien(alienTexture, 300, 100);
+
+        //  aliens.push(alien);
+        // aliensContainer.addChild(alien);
+      
         
         aliensContainer.x = 80;
         aliensContainer.y = 60;
         const speed = 1;
         let direction = 1;
+        let enemyShootTimer = 0;
+        const enemyShootInterval = 60;
 
 
         function enemiesMovement() {
@@ -110,6 +104,28 @@ console.log(
             }
         }
 
+        function enemyBulletSystem(){
+
+            enemyShootTimer++;
+
+            if(enemyShootTimer > enemyShootInterval){
+                if(aliens.length > 0){ // 
+                const randomShooter = aliens[Math.floor(Math.random() * aliens.length)]; // 0.5 * 55 = 27.5 -> 27
+
+           
+                const possitionRandomX = randomShooter.x
+                const possitionRandomY = randomShooter.y
+
+                console.log(possitionRandomX, possitionRandomY);
+                
+                bullet.createEnemyBullet(world, randomShooter);
+
+                // bullet.moveEnemyBullet(world);
+                }
+
+                enemyShootTimer = 0
+            }         
+        }
         function checkCollision() {
             if (!bullet.shipBullet) return; // check if the bullet is null 
 
@@ -142,12 +158,12 @@ console.log(
         app.ticker.add(() => {
 
             // enemiesMovement();
-            // bullet.moveEnemyBullet(world);
-            enemyBulletSystem();
+            // enemyBulletSystem();
             checkCollision();
 
             spaceShip.shipMovement(app);
-            bullet.moveBullet(world);
+            // bullet.moveBullet(world);
+            bullet.moveEnemyBullet(world);
         });
     }
 

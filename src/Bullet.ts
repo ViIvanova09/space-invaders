@@ -28,10 +28,11 @@ export class Bullet {
 
         alienBullet.rect(-2, -20, 3, 10);
         alienBullet.fill({color: 16777215 }) // color white
-        alienBullet.position.set(alien.x, alien.y);
+        alienBullet.position.set(alien.x, alien.y); // can i put the random position of the aliens in here for x and y
+        
         this.alienBullets.push(alienBullet);
 
-        world.addChild(alienBullet)
+        world.addChild(alienBullet);
     }
     public moveBullet(world: Container) {
         if (this.shipBullet) {
@@ -45,7 +46,8 @@ export class Bullet {
     public moveEnemyBullet(world: Container){
     for (let i = this.alienBullets.length - 1; i >= 0; i--) {
         const bullet = this.alienBullets[i];
-
+        
+        
         bullet.y += 8;
         if (bullet.y > GAME_HEIGHT) {
                 world.removeChild(bullet);
@@ -53,4 +55,5 @@ export class Bullet {
             }
         }
     }
+
 }
