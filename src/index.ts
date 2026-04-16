@@ -61,26 +61,31 @@ console.log(
             spaceShip.keyUpMovement(e.key);
         });
 
-        for (let row = 0; row < 5; row++) {
-            for (let col = 0; col < 11; col++) {
-                const x1 = col * 40; // Spacing horizontally
-                const y1 = row * 30; //spacing vertically
-                const alien = new Alien(alienTexture, x1, y1);
+        // for (let row = 0; row < 5; row++) {
+        //     for (let col = 0; col < 11; col++) {
+        //         const x1 = col * 40; // Spacing horizontally
+        //         const y1 = row * 30; //spacing vertically
+        //         const alien = new Alien(alienTexture, x1, y1);
 
-                aliens.push(alien);
-                aliensContainer.addChild(alien);
-            }
-        }
+        //         aliens.push(alien);
+        //         aliensContainer.addChild(alien);
+        //     }
+        // }
         // const timeout = 30;
 
-        function enemyBulletSystem(){
-            if(aliens.length > 0){
-                for(let i = 0; i < aliens.length; i++){
-                const alien = aliens[i];
+         const alien = new Alien(alienTexture, 300, 100);
 
-                bullet.createEnemyBullet(world, alien);
-                }
-            }
+         aliens.push(alien);
+        aliensContainer.addChild(alien);
+
+        function enemyBulletSystem(){
+            bullet.createEnemyBullet(world, alien);
+           
+            //     for(let i = 0; i < aliens.length; i++){
+            //     const alien = aliens[i];
+
+                
+            // }
         }
         
         aliensContainer.x = 80;
@@ -137,6 +142,7 @@ console.log(
         app.ticker.add(() => {
 
             // enemiesMovement();
+            // bullet.moveEnemyBullet(world);
             enemyBulletSystem();
             checkCollision();
 

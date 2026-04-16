@@ -1,4 +1,5 @@
 import { Container, Graphics, Sprite } from "pixi.js";
+import { GAME_HEIGHT } from "./Constants";
 
 export class Bullet {
     shipBullet:  Graphics | null = null;
@@ -27,7 +28,7 @@ export class Bullet {
 
         alienBullet.rect(-2, -20, 3, 10);
         alienBullet.fill({color: 16777215 }) // color white
-        alienBullet.position.set(alien.x, alien.y - 30);
+        alienBullet.position.set(alien.x, alien.y);
         this.alienBullets.push(alienBullet);
 
         world.addChild(alienBullet)
@@ -38,6 +39,17 @@ export class Bullet {
             if (this.shipBullet.y < 0) {
                 world.removeChild(this.shipBullet);
                 this.shipBullet = null;
+            }
+        }
+    }
+    public moveEnemyBullet(world: Container){
+    for (let i = this.alienBullets.length - 1; i >= 0; i--) {
+        const bullet = this.alienBullets[i];
+
+        bullet.y += 8;
+        if (bullet.y > GAME_HEIGHT) {
+                world.removeChild(bullet);
+                this.alienBullets.splice(i, 1)
             }
         }
     }
