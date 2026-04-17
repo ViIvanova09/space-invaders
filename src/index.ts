@@ -113,12 +113,12 @@ console.log(
                 const randomShooter = aliens[Math.floor(Math.random() * aliens.length)]; // 0.5 * 55 = 27.5 -> 27
 
            
-                const possitionRandomX = randomShooter.x
-                const possitionRandomY = randomShooter.y
+                // const possitionRandomX = randomShooter.x
+                // const possitionRandomY = randomShooter.y
 
-                console.log(possitionRandomX, possitionRandomY);
+                // console.log(possitionRandomX, possitionRandomY);
                 
-                bullet.createEnemyBullet(world, randomShooter);
+                bullet.createEnemyBullet(aliensContainer, randomShooter);
 
                 // bullet.moveEnemyBullet(world);
                 }
@@ -157,12 +157,12 @@ console.log(
 
         app.ticker.add(() => {
 
-            // enemiesMovement();
-            // enemyBulletSystem();
+            enemiesMovement();
+            enemyBulletSystem();
             checkCollision();
 
             spaceShip.shipMovement(app);
-            // bullet.moveBullet(world);
+            bullet.moveBullet(world);
             bullet.moveEnemyBullet(world);
         });
     }

@@ -23,16 +23,19 @@ export class Bullet {
 
         world.addChild(this.shipBullet); // add the bullet into the container(stage)
     }
-    public createEnemyBullet(world: Container, alien: Sprite){
+    public createEnemyBullet(aliensContainer: Container, alien: Sprite){
         const alienBullet = new Graphics();
 
         alienBullet.rect(-2, -20, 3, 10);
         alienBullet.fill({color: 16777215 }) // color white
         alienBullet.position.set(alien.x, alien.y); // can i put the random position of the aliens in here for x and y
         
-        this.alienBullets.push(alienBullet);
+        // const globalPos = alien.getGlobalPosition(); //get the alien’s position in world space
 
-        world.addChild(alienBullet);
+        // alienBullet.position.set(globalPos.x, globalPos.y + 20);
+        alienBullet.position.set(alien.x, alien.y + 20)
+        this.alienBullets.push(alienBullet);
+        aliensContainer.addChild(alienBullet);
     }
     public moveBullet(world: Container) {
         if (this.shipBullet) {
