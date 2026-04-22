@@ -5,6 +5,7 @@ import { SpaceShip } from "./SpaceShip";
 import { GAME_HEIGHT, GAME_WIDTH } from "./Constants";
 import { Bullet } from "./Bullet";
 import { Alien } from "./Alien";
+import { SheetTexture } from "./SheetTexture";
 
 console.log(
     `%cPixiJS V8\nTypescript Boilerplate%c ${VERSION} %chttp://www.pixijs.com %c❤️`,
@@ -17,7 +18,8 @@ console.log(
     const app = new Application(); //It is the main controller of the entire game.
     const world = new Container(); // // This is the main container that holds everything in the game. And everything you want to see must be added to the stage
     const bullet = new Bullet();
-    const aliens: Alien[] = [];
+    // const aliens: Alien[] = [];
+    const aliens: (Alien | null)[] = [];
     const aliensContainer = new Container(); // This container holds all the enemies
 
     //await window load
@@ -34,13 +36,15 @@ console.log(
             bundles: [
                 { name: "space-ship", assets: [{ alias: "ship", src: "assets/spaceShip.png" }] },
                 { name: "alien", assets: [{ alias: "alien", src: "assets/alien.png" }] },
+                { name: "spritesheet", assets: [{ alias: "spritesheet", src: "assets/spritesheet.json" }] },
             ],
         } satisfies AssetsManifest;
 
         await Assets.init({ manifest });
-        await Assets.loadBundle(["space-ship", "alien", "pixieData", "pixieAtlas"]);
+        await Assets.loadBundle(["space-ship", "alien", "pixieData", "pixieAtlas", "spritesheet"]);
         const shipTexture = Assets.get("ship");
         const alienTexture = Assets.get("alien");
+        // const explosionTexture = Assets.get("spritesheet");
 
         const spaceShip = new SpaceShip(shipTexture, app);
 
@@ -56,11 +60,17 @@ console.log(
             }
         });
 
-
         window.addEventListener("keyup", (e) => {
             spaceShip.keyUpMovement(e.key);
         });
 
+        window.addEventListener("pointerdown", (e) => {
+            const explosion = new SheetTexture();
+
+            explosion.position.set(e.clientX, e.clientY);
+            app.stage.addChild(explosion);
+            explosion.play();
+        });
         for (let row = 0; row < 5; row++) {
             for (let col = 0; col < 11; col++) {
                 const x1 = col * 40; // Spacing horizontally
@@ -71,25 +81,23 @@ console.log(
                 aliensContainer.addChild(alien);
             }
         }
-     
+
         // console.log("length",aliens.length); // 55
-        
+
         //  const alien = new Alien(alienTexture, 300, 100);
 
         //  aliens.push(alien);
         // aliensContainer.addChild(alien);
-      
-        
+
         aliensContainer.x = 80;
         aliensContainer.y = 60;
         const speed = 1;
         let direction = 1;
         let enemyShootTimer = 0;
-        const enemyShootInterval = 60;
-
+        const enemyShootInterval = 60; //enemy shoot intrval 60fps
 
         function enemiesMovement() {
-             const bounds = aliensContainer.getBounds(); //get the boundaries of the aliensContainer
+            const bounds = aliensContainer.getBounds(); //get the boundaries of the aliensContainer
 
             aliensContainer.x += speed * direction;
 
@@ -103,66 +111,150 @@ console.log(
                 aliensContainer.y += 10;
             }
         }
+        //   function enemyBulletSystem(){
+        // enemyShootTimer++
+        //             if(enemyShootTimer > enemyShootInterval){
+        //             if(aliens.length > 0){ //
+        //             const randomShooter = aliens[Math.floor(Math.random() * aliens.length)]; // 0.5 * 55 = 27.5 -> 27
 
-        function enemyBulletSystem(){
+        //             bullet.createEnemyBullet(aliensContainer, randomShooter);
 
+        //             // bullet.moveEnemyBullet(world);
+        //             }
+
+        //             enemyShootTimer = 0
+        //         }
+        // }
+
+        // function enemyBulletSystem(){
+
+        //     enemyShootTimer++;
+
+        //     if(enemyShootTimer > enemyShootInterval){
+        //         if(aliens.some(alien => alien !== null)){ // check if at least one none null alien
+        //             let randomShooter = null; // at first we dont know which alien will shoot
+
+        //             while(randomShooter == null) { // while this is true keep searching for alive enemy
+
+        //                 const randCol = Math.floor(Math.random() * 11); //random number between 0 and 10
+
+        //                 console.log("randomcol", randCol + 1);
+
+        //                 for(let i = 4; i >= 0; i--){ // search col from bottom to top decrement
+
+        //                     console.log('index', i);
+        //                     console.log('alien', aliens[randCol + (i * 11)], randCol + (i * 11));
+        //                     if(aliens[randCol + (i * 11)]){ // random col + rox * 11 if we have alien in this index
+        //                         randomShooter = aliens[randCol + (i * 11)]; // chose random one
+        //                        break
+
+        //                     }
+        //                 }
+        //             }
+        //         bullet.createEnemyBullet(aliensContainer, randomShooter);
+
+        //         }
+
+        //         enemyShootTimer = 0
+        //         }
+        //     }
+        function enemyBulletSystem() {
             enemyShootTimer++;
+            if (enemyShootTimer > enemyShootInterval) {
+                // has enough time pass
 
-            if(enemyShootTimer > enemyShootInterval){
-                if(aliens.length > 0){ // 
-                const randomShooter = aliens[Math.floor(Math.random() * aliens.length)]; // 0.5 * 55 = 27.5 -> 27
+                const shooters: Alien[] = []; // store the shooter enemies into an array
 
-           
-                // const possitionRandomX = randomShooter.x
-                // const possitionRandomY = randomShooter.y
+                for (let i = 0; i < aliens.length; i++) {
+                    // loop trough all the aliens and get alien on position i
+                    const alien = aliens[i];
 
-                // console.log(possitionRandomX, possitionRandomY);
-                
-                bullet.createEnemyBullet(aliensContainer, randomShooter);
+                    if (alien == null) continue; // if the picked alien is null (death) continue
 
-                // bullet.moveEnemyBullet(world);
-                }
-
-                enemyShootTimer = 0
-            }         
-        }
-        function checkCollision() {
-            if (!bullet.shipBullet) return; // check if the bullet is null 
-
-            const bulletBounds = bullet.shipBullet.getBounds(); //get the boundaries of the bullet box 
-            
-            for(let i = 0; i < aliens.length; i++){
-                const oneEnemy = aliens[i]; // we should know the index to get the alien coordinates because the alien is in an array
-                const aliensBounds = oneEnemy.getBounds();//get the boundaries of the alien box
-
-                if(bulletBounds.maxX > aliensBounds.minX && aliensBounds.maxX > bulletBounds.minX &&  // this is an interpretation of aabb formula for collision in 2d games  
-                    bulletBounds.maxY > aliensBounds.minY && bulletBounds.minY < aliensBounds.maxY) {
-
-                    aliensContainer.removeChild(oneEnemy);
-                    aliens.splice(i, 1);
-                    world.removeChild(bullet.shipBullet);
-                    bullet.shipBullet = null;
-                    
-                    return
-                    
+                    if (!hasEnemyBelow(i)) {
+                        // if we have enemy below we do not push if we there is no enemy we push
+                        shooters.push(alien);
                     }
-                 }
+                }
+                if (shooters.length > 0) {
+                    // if we have at least one enemy allowed to shoot
+                    const randomShooter = shooters[Math.floor(Math.random() * shooters.length)];
+
+                    bullet.createEnemyBullet(aliensContainer, randomShooter);
+                    enemyShootTimer = 0;
+                }
+            }
+        }
+        function hasEnemyBelow(index: number) {
+            // index === i
+            for (let j = index + 11; j < aliens.length; j += 11) {
+                if (aliens[j] !== null) {
+                    return true; // we don't have death alien
+                }
             }
 
+            return false;
+        }
 
+        function shipEnemyCollision() {
+            if (!bullet.shipBullet) return; // check if the bullet is null
+
+            const bulletBounds = bullet.shipBullet.getBounds(); //get the boundaries of the bullet box
+
+            for (let i = 0; i < aliens.length; i++) {
+                const oneEnemy = aliens[i]; // we should know the index to get the alien coordinates because the alien is in an array
+
+                // console.log(oneEnemy == null);
+
+                if (oneEnemy == null) continue;
+
+                const aliensBounds = oneEnemy.getBounds(); //get the boundaries of the alien box
+
+                if (
+                    bulletBounds.maxX > aliensBounds.minX &&
+                    aliensBounds.maxX > bulletBounds.minX && // this is an interpretation of aabb formula for collision in 2d games
+                    bulletBounds.maxY > aliensBounds.minY &&
+                    bulletBounds.minY < aliensBounds.maxY
+                ) {
+                    aliensContainer.removeChild(oneEnemy);
+                    aliens[i] = null;
+                    world.removeChild(bullet.shipBullet);
+                    bullet.shipBullet = null;
+
+                    return;
+                }
+            }
+        }
+
+        function enemyPlayerCollision() {
+            for (let i = 0; i < bullet.alienBullets.length; i++) {
+                const enemyBulletBounds = bullet.alienBullets[i].getBounds();
+                const shipBounds = spaceShip.getBounds();
+
+                if (
+                    enemyBulletBounds.maxX > shipBounds.minX &&
+                    shipBounds.maxX > enemyBulletBounds.minX && // this is an interpretation of aabb formula for collision in 2d games
+                    enemyBulletBounds.maxY > shipBounds.minY &&
+                    enemyBulletBounds.minY < shipBounds.maxY
+                ) {
+                    // world.removeChild(spaceShip);
+                    spaceShip.removeShip();
+                }
+            }
+        }
         app.stage.addChild(world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
 
         world.addChild(spaceShip);
         world.addChild(aliensContainer);
 
         app.ticker.add(() => {
-
-            enemiesMovement();
-            enemyBulletSystem();
-            checkCollision();
+            // enemiesMovement();
+            // enemyBulletSystem();
+            shipEnemyCollision();
+            enemyPlayerCollision();
 
             spaceShip.shipMovement(app);
-            bullet.moveBullet(world);
+            bullet.moveShipBullet(world);
             bullet.moveEnemyBullet(world);
         });
     }

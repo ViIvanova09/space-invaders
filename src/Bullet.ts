@@ -4,8 +4,10 @@ import { GAME_HEIGHT } from "./Constants";
 export class Bullet {
     shipBullet:  Graphics | null = null;
     alienBullets: Graphics[] = [];
+    padding;
     constructor() {
         this.shipBullet = null;
+        this.padding = 8;
     }
 
     public createBullet(ship: Sprite, world: Container) {
@@ -28,16 +30,13 @@ export class Bullet {
 
         alienBullet.rect(-2, -20, 3, 10);
         alienBullet.fill({color: 16777215 }) // color white
-        alienBullet.position.set(alien.x, alien.y); // can i put the random position of the aliens in here for x and y
+        alienBullet.position.set(alien.x, alien.y); 
         
-        // const globalPos = alien.getGlobalPosition(); //get the alien’s position in world space
-
-        // alienBullet.position.set(globalPos.x, globalPos.y + 20);
         alienBullet.position.set(alien.x, alien.y + 20)
         this.alienBullets.push(alienBullet);
         aliensContainer.addChild(alienBullet);
     }
-    public moveBullet(world: Container) {
+    public moveShipBullet(world: Container) {
         if (this.shipBullet) {
             this.shipBullet.y -= 8;
             if (this.shipBullet.y < 0) {
@@ -48,15 +47,15 @@ export class Bullet {
     }
     public moveEnemyBullet(world: Container){
     for (let i = this.alienBullets.length - 1; i >= 0; i--) {
-        const bullet = this.alienBullets[i];
+        const alienBullet = this.alienBullets[i];
         
         
-        bullet.y += 8;
-        if (bullet.y > GAME_HEIGHT) {
-                world.removeChild(bullet);
+        alienBullet.y += 6;
+        if (alienBullet.y > GAME_HEIGHT) {
+                world.removeChild(alienBullet);
                 this.alienBullets.splice(i, 1)
             }
         }
-    }
-
+  
+    }   
 }
