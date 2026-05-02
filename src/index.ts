@@ -44,7 +44,6 @@ console.log(
         await Assets.loadBundle(["space-ship", "alien", "pixieData", "pixieAtlas", "spritesheet"]);
         const shipTexture = Assets.get("ship");
         const alienTexture = Assets.get("alien");
-        // const explosionTexture = Assets.get("spritesheet");
 
         const spaceShip = new SpaceShip(shipTexture, app);
 
@@ -64,13 +63,24 @@ console.log(
             spaceShip.keyUpMovement(e.key);
         });
 
-        window.addEventListener("pointerdown", (e) => {
+        function triggerExplosion(alien: Alien){
             const explosion = new SheetTexture();
 
-            explosion.position.set(e.clientX, e.clientY);
-            app.stage.addChild(explosion);
+            const one = alien
+
+            explosion.position.set(one?.x, one?.y);
             explosion.play();
-        });
+            aliensContainer.addChild(explosion);
+            console.log("possition",  explosion.position.set(one?.x, one?.y));
+            
+            // explosion.position.set(200, 300);
+            // explosion.play();
+            // world.addChild(explosion);            
+            // console.log("position", explosion.position.set(200,300));
+            
+
+        }
+  
         for (let row = 0; row < 5; row++) {
             for (let col = 0; col < 11; col++) {
                 const x1 = col * 40; // Spacing horizontally
@@ -81,13 +91,6 @@ console.log(
                 aliensContainer.addChild(alien);
             }
         }
-
-        // console.log("length",aliens.length); // 55
-
-        //  const alien = new Alien(alienTexture, 300, 100);
-
-        //  aliens.push(alien);
-        // aliensContainer.addChild(alien);
 
         aliensContainer.x = 80;
         aliensContainer.y = 60;
@@ -172,7 +175,7 @@ console.log(
                     if (alien == null) continue; // if the picked alien is null (death) continue
 
                     if (!hasEnemyBelow(i)) {
-                        // if we have enemy below we do not push if we there is no enemy we push
+                        // if we have enemy below we do not push if there is no enemy we push
                         shooters.push(alien);
                     }
                 }
@@ -216,6 +219,7 @@ console.log(
                     bulletBounds.maxY > aliensBounds.minY &&
                     bulletBounds.minY < aliensBounds.maxY
                 ) {
+                    triggerExplosion(oneEnemy);
                     aliensContainer.removeChild(oneEnemy);
                     aliens[i] = null;
                     world.removeChild(bullet.shipBullet);
@@ -237,7 +241,7 @@ console.log(
                     enemyBulletBounds.maxY > shipBounds.minY &&
                     enemyBulletBounds.minY < shipBounds.maxY
                 ) {
-                    // world.removeChild(spaceShip);
+                    world.removeChild(spaceShip);
                     spaceShip.removeShip();
                 }
             }

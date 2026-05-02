@@ -1,5 +1,6 @@
 import { Container, Graphics, Sprite } from "pixi.js";
 import { GAME_HEIGHT } from "./Constants";
+import { Alien } from "./Alien";
 
 export class Bullet {
     shipBullet:  Graphics | null = null;
@@ -25,7 +26,7 @@ export class Bullet {
 
         world.addChild(this.shipBullet); // add the bullet into the container(stage)
     }
-    public createEnemyBullet(aliensContainer: Container, alien: Sprite){
+    public createEnemyBullet(aliensContainer: Container, alien: Alien){
         const alienBullet = new Graphics();
 
         alienBullet.rect(-2, -20, 3, 10);
@@ -56,6 +57,5 @@ export class Bullet {
                 this.alienBullets.splice(i, 1)
             }
         }
-  
     }   
 }
