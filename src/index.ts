@@ -6,6 +6,7 @@ import { GAME_HEIGHT, GAME_WIDTH } from "./Constants";
 import { Bullet } from "./Bullet";
 import { Alien } from "./Alien";
 import { SheetTexture } from "./SheetTexture";
+import { GameOverText } from "./GameOverText";
 
 console.log(
     `%cPixiJS V8\nTypescript Boilerplate%c ${VERSION} %chttp://www.pixijs.com %c❤️`,
@@ -18,9 +19,9 @@ console.log(
     const app = new Application(); //It is the main controller of the entire game.
     const world = new Container(); // // This is the main container that holds everything in the game. And everything you want to see must be added to the stage
     const bullet = new Bullet();
-    // const aliens: Alien[] = [];
     const aliens: (Alien | null)[] = [];
     const aliensContainer = new Container(); // This container holds all the enemies
+    const gameOverScreen = new Container(); // This container is for the game over screen when player is killed
 
     //await window load
     await new Promise((resolve) => {
@@ -44,6 +45,7 @@ console.log(
         await Assets.loadBundle(["space-ship", "alien", "pixieData", "pixieAtlas", "spritesheet"]);
         const shipTexture = Assets.get("ship");
         const alienTexture = Assets.get("alien");
+        const gameOverText = new GameOverText(app);
 
         const spaceShip = new SpaceShip(shipTexture, app);
 
@@ -59,28 +61,27 @@ console.log(
             }
         });
 
+        window.addEventListener("keydown", (e) => {
+            if(e.key === "r"){
+                gameOverScreen.visible = false;
+            }
+        })
+
         window.addEventListener("keyup", (e) => {
             spaceShip.keyUpMovement(e.key);
         });
 
-        function triggerExplosion(alien: Alien){
+        function triggerExplosion(alien: Alien) {
             const explosion = new SheetTexture();
 
-            const one = alien
+            const one = alien;
 
             explosion.position.set(one?.x, one?.y);
             explosion.play();
             aliensContainer.addChild(explosion);
-            console.log("possition",  explosion.position.set(one?.x, one?.y));
-            
-            // explosion.position.set(200, 300);
-            // explosion.play();
-            // world.addChild(explosion);            
-            // console.log("position", explosion.position.set(200,300));
-            
-
+            console.log("position", explosion.position.set(one?.x, one?.y));
         }
-  
+
         for (let row = 0; row < 5; row++) {
             for (let col = 0; col < 11; col++) {
                 const x1 = col * 40; // Spacing horizontally
@@ -98,6 +99,8 @@ console.log(
         let direction = 1;
         let enemyShootTimer = 0;
         const enemyShootInterval = 60; //enemy shoot intrval 60fps
+
+        gameOverScreen.visible = false;
 
         function enemiesMovement() {
             const bounds = aliensContainer.getBounds(); //get the boundaries of the aliensContainer
@@ -243,11 +246,19 @@ console.log(
                 ) {
                     world.removeChild(spaceShip);
                     spaceShip.removeShip();
+                    showGameOver();
                 }
             }
         }
-        app.stage.addChild(world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
 
+        function showGameOver() {
+            gameOverScreen.visible = true;
+        }
+
+        gameOverScreen.addChild(gameOverText);
+
+        app.stage.addChild(world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
+        app.stage.addChild(gameOverScreen);
         world.addChild(spaceShip);
         world.addChild(aliensContainer);
 
@@ -283,3 +294,7 @@ console.log(
         window.addEventListener("resize", resize);
     }
 })();
+
+// remove bullets when player is killed (optional explosion when hit player)
+// when we are death remove everything from the background
+// when we pressed restart resume back to the beginning of the game 
