@@ -61,6 +61,7 @@ export class SpaceShip extends GameElements {
         this.isAlive = false;
         if (this.parent) {
             this.parent.removeChild(this);
+
         }
 
         // this.destroy({texture: false})

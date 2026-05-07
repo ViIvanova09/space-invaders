@@ -7,4 +7,4 @@ export class Alien extends GameElements {
 
         this.position.set(this.x, this.y);
     }
-}
+}     

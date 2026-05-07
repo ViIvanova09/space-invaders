@@ -53,19 +53,21 @@ console.log(
 
         resizeCanvas();
 
-        window.addEventListener("keydown", (e) => {
-            spaceShip.keyDownMovement(e.key);
+    
+            window.addEventListener("keydown", (e) => {
+                spaceShip.keyDownMovement(e.key);
 
-            if (e.code === "Space") {
-                bullet.createBullet(spaceShip, world);
-            }
-        });
+                if (e.code === "Space") {
+                    bullet.createPlayerBullet(spaceShip, world);
+                }
+            });
 
+        
         window.addEventListener("keydown", (e) => {
-            if(e.key === "r"){
+            if (e.key === "r" && gameOverScreen.visible) {
                 gameOverScreen.visible = false;
             }
-        })
+        });
 
         window.addEventListener("keyup", (e) => {
             spaceShip.keyUpMovement(e.key);
@@ -295,6 +297,5 @@ console.log(
     }
 })();
 
-// remove bullets when player is killed (optional explosion when hit player)
+// remove bullets when player is killed (optional explosion when hit player) removeEventlistener
 // when we are death remove everything from the background
-// when we pressed restart resume back to the beginning of the game 

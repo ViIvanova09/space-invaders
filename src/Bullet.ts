@@ -5,14 +5,14 @@ import { Alien } from "./Alien";
 export class Bullet {
     shipBullet:  Graphics | null = null;
     alienBullets: Graphics[] = [];
-    padding;
+
     constructor() {
         this.shipBullet = null;
-        this.padding = 8;
+
     }
 
-    public createBullet(ship: Sprite, world: Container) {
-        if(this.shipBullet){ // ако графиките не са нул и имаме графикс върни 
+    public createPlayerBullet(ship: Sprite, world: Container) {
+        if(this.shipBullet){ 
             return
         }
 
