@@ -45,8 +45,8 @@ console.log(
         await Assets.loadBundle(["space-ship", "alien", "pixieData", "pixieAtlas", "spritesheet"]);
         const shipTexture = Assets.get("ship");
         const alienTexture = Assets.get("alien");
+       
         const gameOverText = new GameOverText(app);
-
         const spaceShip = new SpaceShip(shipTexture, app);
 
         document.body.appendChild(app.canvas);
@@ -117,53 +117,7 @@ console.log(
                 aliensContainer.y += 10;
             }
         }
-        //   function enemyBulletSystem(){
-        // enemyShootTimer++
-        //             if(enemyShootTimer > enemyShootInterval){
-        //             if(aliens.length > 0){ //
-        //             const randomShooter = aliens[Math.floor(Math.random() * aliens.length)]; // 0.5 * 55 = 27.5 -> 27
-
-        //             bullet.createEnemyBullet(aliensContainer, randomShooter);
-
-        //             // bullet.moveEnemyBullet(world);
-        //             }
-
-        //             enemyShootTimer = 0
-        //         }
-        // }
-
-        // function enemyBulletSystem(){
-
-        //     enemyShootTimer++;
-
-        //     if(enemyShootTimer > enemyShootInterval){
-        //         if(aliens.some(alien => alien !== null)){ // check if at least one none null alien
-        //             let randomShooter = null; // at first we dont know which alien will shoot
-
-        //             while(randomShooter == null) { // while this is true keep searching for alive enemy
-
-        //                 const randCol = Math.floor(Math.random() * 11); //random number between 0 and 10
-
-        //                 console.log("randomcol", randCol + 1);
-
-        //                 for(let i = 4; i >= 0; i--){ // search col from bottom to top decrement
-
-        //                     console.log('index', i);
-        //                     console.log('alien', aliens[randCol + (i * 11)], randCol + (i * 11));
-        //                     if(aliens[randCol + (i * 11)]){ // random col + rox * 11 if we have alien in this index
-        //                         randomShooter = aliens[randCol + (i * 11)]; // chose random one
-        //                        break
-
-        //                     }
-        //                 }
-        //             }
-        //         bullet.createEnemyBullet(aliensContainer, randomShooter);
-
-        //         }
-
-        //         enemyShootTimer = 0
-        //         }
-        //     }
+       
         function enemyBulletSystem() {
             enemyShootTimer++;
             if (enemyShootTimer > enemyShootInterval) {
