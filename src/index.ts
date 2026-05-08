@@ -6,7 +6,7 @@ import { GAME_HEIGHT, GAME_WIDTH } from "./Constants";
 import { Bullet } from "./Bullet";
 import { Alien } from "./Alien";
 import { SheetTexture } from "./SheetTexture";
-import { GameOverText } from "./GameOverText";
+import { GameOverScreen } from "./GameOverScreen";
 
 console.log(
     `%cPixiJS V8\nTypescript Boilerplate%c ${VERSION} %chttp://www.pixijs.com %c❤️`,
@@ -21,7 +21,6 @@ console.log(
     const bullet = new Bullet();
     const aliens: (Alien | null)[] = [];
     const aliensContainer = new Container(); // This container holds all the enemies
-    const gameOverScreen = new Container(); // This container is for the game over screen when player is killed
 
     //await window load
     await new Promise((resolve) => {
@@ -46,26 +45,27 @@ console.log(
         const shipTexture = Assets.get("ship");
         const alienTexture = Assets.get("alien");
        
-        const gameOverText = new GameOverText(app);
+        const gameOverScreen = new GameOverScreen(app);
         const spaceShip = new SpaceShip(shipTexture, app);
 
         document.body.appendChild(app.canvas);
 
         resizeCanvas();
 
-        function fireBullet(e: KeyboardEvent) {
+        function playerFireBullet(e: KeyboardEvent) {
             spaceShip.keyDownMovement(e.key);
             if (e.code === "Space") {
                 bullet.createPlayerBullet(spaceShip, world);
             }
         }
-        window.addEventListener("keydown", fireBullet)
+        window.addEventListener("keydown", playerFireBullet)
 
-        window.addEventListener("keydown", (e) => {
-            if (e.key === "r" && gameOverScreen.visible) {
+        function restartGame(e: KeyboardEvent){
+             if (e.key === "r" && gameOverScreen.visible) {
                 gameOverScreen.visible = false;
             }
-        });
+        }
+        window.addEventListener("keydown", restartGame)
 
         window.addEventListener("keyup", (e) => {
             spaceShip.keyUpMovement(e.key);
@@ -79,7 +79,6 @@ console.log(
             explosion.position.set(one?.x, one?.y);
             explosion.play();
             aliensContainer.addChild(explosion);
-            console.log("position", explosion.position.set(one?.x, one?.y));
         }
 
         for (let row = 0; row < 5; row++) {
@@ -101,6 +100,7 @@ console.log(
         const enemyShootInterval = 60; //enemy shoot intrval 60fps
 
         gameOverScreen.visible = false;
+        let gameOver = false;
 
         function enemiesMovement() {
             const bounds = aliensContainer.getBounds(); //get the boundaries of the aliensContainer
@@ -120,6 +120,11 @@ console.log(
        
         function enemyBulletSystem() {
             enemyShootTimer++;
+
+            // if (gameOver){ 
+            //     return
+            // }
+
             if (enemyShootTimer > enemyShootInterval) {
                 // has enough time pass
 
@@ -164,7 +169,6 @@ console.log(
             for (let i = 0; i < aliens.length; i++) {
                 const oneEnemy = aliens[i]; // we should know the index to get the alien coordinates because the alien is in an array
 
-                // console.log(oneEnemy == null);
 
                 if (oneEnemy == null) continue;
 
@@ -200,17 +204,21 @@ console.log(
                 ) {
                     world.removeChild(spaceShip);
                     spaceShip.removeShip();
-                    window.removeEventListener("keydown", fireBullet);
+                    window.removeEventListener("keydown", playerFireBullet);
                     showGameOver();
+                    console.log("shoot", bullet.alienBullets)
+
                 }
             }
         }
 
         function showGameOver() {
             gameOverScreen.visible = true;
+            world.removeChild(aliensContainer);
+            gameOver = true;
+            
         }
 
-        gameOverScreen.addChild(gameOverText);
 
         app.stage.addChild(world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
         app.stage.addChild(gameOverScreen);
@@ -219,7 +227,7 @@ console.log(
 
         app.ticker.add(() => {
             // enemiesMovement();
-            // enemyBulletSystem();
+            enemyBulletSystem();
             shipEnemyCollision();
             enemyPlayerCollision();
 
@@ -252,3 +260,4 @@ console.log(
 
 // remove bullets when player is killed (optional explosion when hit player) and check if the ship is destroyed removeEventlistener
 // when we are death remove everything from the background and after restart to begin the game 
+// start and end (reset) function bez hardcoded settimeout

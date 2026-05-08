@@ -21,12 +21,16 @@ export class SpaceShip extends GameElements {
     public keyDownMovement(key: string) {
         if (key === "ArrowLeft") {
             this.arrowLeft = true;
+            console.log("movr", this.arrowLeft);
+            
         }
 
         if (key === "ArrowRight") {
             this.arrowRight = true;
         }
     }
+
+    
     public keyUpMovement(key: string) {
         if (key === "ArrowLeft") {
             this.arrowLeft = false;
@@ -59,6 +63,8 @@ export class SpaceShip extends GameElements {
         }
 
         this.isAlive = false;
+
+        // that removes itself from any parent it has 
         if (this.parent) {
             this.parent.removeChild(this);
 
