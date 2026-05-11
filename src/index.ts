@@ -7,6 +7,7 @@ import { Bullet } from "./Bullet";
 import { Alien } from "./Alien";
 import { SheetTexture } from "./SheetTexture";
 import { GameOverScreen } from "./GameOverScreen";
+import {Game} from "./Game"
 
 console.log(
     `%cPixiJS V8\nTypescript Boilerplate%c ${VERSION} %chttp://www.pixijs.com %c❤️`,
@@ -23,7 +24,8 @@ console.log(
     let aliensContainer: Container; // This container holds all the enemies
     let spaceShip: SpaceShip;
     let gameOver: boolean;
-    let gameLevel: number;
+    // let gameLevel: number;
+    let game: Game;
 
     //await window load
     await new Promise((resolve) => {
@@ -54,10 +56,11 @@ console.log(
         const shipTexture = Assets.get("ship");
         const alienTexture = Assets.get("alien");
 
+        game.createAlinesGroup()
         const gameOverScreen = new GameOverScreen(app);
 
         spaceShip = new SpaceShip(shipTexture, app);
-
+        game = new Game(alienTexture);
         document.body.appendChild(app.canvas);
 
         resizeCanvas();
@@ -91,20 +94,21 @@ console.log(
             explosion.play();
             aliensContainer.addChild(explosion);
         }
+        //  gameLevel = 1
+        // const levels = LEVELS[gameLevel - 1];
 
-        for (let row = 0; row < 5; row++) {
-            for (let col = 0; col < 11; col++) {
-                const x1 = col * 40; // Spacing horizontally
-                const y1 = row * 30; //spacing vertically
-                const alien = new Alien(alienTexture, x1, y1);
+        // for (let row = 0; row < levels.rowLength; row++) {
+        //     for (let col = 0; col < levels.colLength; col++) {
+        //         const x1 = col * 40; // Spacing horizontally
+        //         const y1 = row * 30; //spacing vertically
+        //         const alien = new Alien(alienTexture, x1, y1);
 
-                aliens.push(alien);
-                aliensContainer.addChild(alien);
-            }
-        }
-
-        aliensContainer.x = 80;
-        aliensContainer.y = 60;
+        //         aliens.push(alien);
+        //         aliensContainer.addChild(alien);
+        //     }
+        // }
+        
+      
         const speed = 1;
         let direction = 1;
         let enemyShootTimer = 0;
@@ -235,7 +239,7 @@ console.log(
 
         app.ticker.add(() => {
             // enemiesMovement();
-            enemyBulletSystem();
+            // enemyBulletSystem();
             shipEnemyCollision();
             enemyPlayerCollision();
 
