@@ -18,7 +18,6 @@ console.log(
 
 (async () => {
     let app: Application; //It is the main controller of the entire game.
-    let world: Container; // // This is the main container that holds everything in the game. And everything you want to see must be added to the stage
     let bullet: Bullet;
     let aliens: (Alien | null)[];
     let aliensContainer: Container; // This container holds all the enemies
@@ -39,7 +38,6 @@ console.log(
         aliens = [];
         aliensContainer = new Container();
         app = new Application();
-        world = new Container();
 
         await app.init({ backgroundColor: "#212842", width: GAME_WIDTH, height: GAME_HEIGHT });
 
@@ -56,11 +54,11 @@ console.log(
         const shipTexture = Assets.get("ship");
         const alienTexture = Assets.get("alien");
 
-        game.createAlinesGroup()
+
         const gameOverScreen = new GameOverScreen(app);
 
         spaceShip = new SpaceShip(shipTexture, app);
-        game = new Game(alienTexture);
+        game = new Game();
         document.body.appendChild(app.canvas);
 
         resizeCanvas();
@@ -68,7 +66,7 @@ console.log(
         function playerFireBullet(e: KeyboardEvent) {
             spaceShip.keyDownMovement(e.key);
             if (e.code === "Space") {
-                bullet.createPlayerBullet(spaceShip, world);
+                bullet.createPlayerBullet(spaceShip, game.world);
             }
         }
         window.addEventListener("keydown", playerFireBullet);
@@ -94,19 +92,6 @@ console.log(
             explosion.play();
             aliensContainer.addChild(explosion);
         }
-        //  gameLevel = 1
-        // const levels = LEVELS[gameLevel - 1];
-
-        // for (let row = 0; row < levels.rowLength; row++) {
-        //     for (let col = 0; col < levels.colLength; col++) {
-        //         const x1 = col * 40; // Spacing horizontally
-        //         const y1 = row * 30; //spacing vertically
-        //         const alien = new Alien(alienTexture, x1, y1);
-
-        //         aliens.push(alien);
-        //         aliensContainer.addChild(alien);
-        //     }
-        // }
         
       
         const speed = 1;
@@ -197,7 +182,7 @@ console.log(
                     triggerExplosion(oneEnemy);
                     aliensContainer.removeChild(oneEnemy);
                     aliens[i] = null;
-                    world.removeChild(bullet.shipBullet);
+                    game.world.removeChild(bullet.shipBullet);
                     bullet.shipBullet = null;
 
                     return;
@@ -216,7 +201,7 @@ console.log(
                     enemyBulletBounds.maxY > shipBounds.minY &&
                     enemyBulletBounds.minY < shipBounds.maxY
                 ) {
-                    world.removeChild(spaceShip);
+                    game.world.removeChild(spaceShip);
                     spaceShip.removeShip();
                     window.removeEventListener("keydown", playerFireBullet);
                     showGameOver();
@@ -227,14 +212,14 @@ console.log(
 
         function showGameOver() {
             gameOverScreen.visible = true;
-            world.removeChild(aliensContainer);
+            game.world.removeChild(aliensContainer);
             gameOver = true;
         }
-
-        app.stage.addChild(world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
+        app.stage.addChild(game.world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
         app.stage.addChild(gameOverScreen);
-        world.addChild(spaceShip);
-        world.addChild(aliensContainer);
+        game.createAliensGroup(alienTexture);
+        game.world.addChild(spaceShip);
+        game.world.addChild(aliensContainer);
         gameOver = false;
 
         app.ticker.add(() => {
@@ -244,8 +229,8 @@ console.log(
             enemyPlayerCollision();
 
             spaceShip.shipMovement(app);
-            bullet.moveShipBullet(world);
-            bullet.moveEnemyBullet(world);
+            bullet.moveShipBullet(game.world);
+            bullet.moveEnemyBullet(game.world);
         });
     }
 
@@ -261,27 +246,18 @@ console.log(
         function playerFireBullet(e: KeyboardEvent) {
             spaceShip.keyDownMovement(e.key);
             if (e.code === "Space") {
-                bullet.createPlayerBullet(spaceShip, world);
+                bullet.createPlayerBullet(spaceShip, game.world);
             }
         }
         window.addEventListener("keydown", playerFireBullet);
-
-        for (let row = 0; row < 5; row++) {
-            for (let col = 0; col < 11; col++) {
-                const x1 = col * 40; // Spacing horizontally
-                const y1 = row * 30; //spacing vertically
-                const alien = new Alien(alienTexture, x1, y1);
-
-                aliens.push(alien);
-                aliensContainer.addChild(alien);
-            }
-        }
+        
+        game.createAliensGroup(alienTexture);
 
         aliensContainer.x = 80;
         aliensContainer.y = 60;
 
-        world.addChild(spaceShip);
-        world.addChild(aliensContainer);
+        game.world.addChild(spaceShip);
+        game.world.addChild(aliensContainer);
         gameOver = false;
     }
 
@@ -294,10 +270,10 @@ console.log(
 
             const scale = Math.min(screenWidth / app.screen.width, screenHeight / app.screen.height);
 
-            world.scale.set(scale);
+            game.world.scale.set(scale);
 
-            world.x = (screenWidth - app.screen.width * scale) / 2;
-            world.y = (screenHeight - app.screen.height * scale) / 2;
+            game.world.x = (screenWidth - app.screen.width * scale) / 2;
+            game.world.y = (screenHeight - app.screen.height * scale) / 2;
         };
 
         resize();
@@ -309,3 +285,4 @@ console.log(
 // remove bullets when player is killed (optional explosion when hit player) and check if the ship is destroyed removeEventlistener
 // when we are death remove everything from the background and after restart to begin the game
 // start and end (reset) function bez hardcoded settimeout
+// when aliens container hit ship game over 
