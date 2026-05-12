@@ -35,7 +35,9 @@ export class Bullet {
         
         alienBullet.position.set(alien.x, alien.y + 20)
         this.alienBullets.push(alienBullet);
-        aliensContainer.addChild(alienBullet);
+       aliensContainer.addChild(alienBullet);
+    //    console.log("create world", alienContainer.addChild(alienBullet));
+       
     }
     public moveShipBullet(world: Container) {
         if (this.shipBullet) {
@@ -52,10 +54,13 @@ export class Bullet {
         
         
         alienBullet.y += 6;
+        
         if (alienBullet.y > GAME_HEIGHT) {
                 world.removeChild(alienBullet);
+                console.log("word", world);
+                
                 this.alienBullets.splice(i, 1)
             }
         }
-    }   
+    }  
 }
