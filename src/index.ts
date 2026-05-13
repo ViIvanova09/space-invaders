@@ -1,8 +1,8 @@
 import "./style.css";
-import { Application, Assets, AssetsManifest, Container } from "pixi.js";
+import { Application, Assets, AssetsManifest } from "pixi.js";
 import "@esotericsoftware/spine-pixi-v8";
 import { SpaceShip } from "./SpaceShip";
-import { GAME_HEIGHT, GAME_WIDTH } from "./Constants";
+import { GAME_HEIGHT, GAME_WIDTH, LEVELS } from "./Constants";
 import { Bullet } from "./Bullet";
 import { Alien } from "./Alien";
 import { SheetTexture } from "./SheetTexture";
@@ -17,12 +17,11 @@ console.log(
 );
 
 (async () => {
-    // let world: Container;
     let app: Application; //It is the main controller of the entire game.
     let bullet: Bullet;
     let spaceShip: SpaceShip;
     let gameOver: boolean;
-    // let gameLevel: number;
+    let gameLevel: number;
     let game: Game;
 
     //await window load
@@ -35,7 +34,7 @@ console.log(
     async function init(): Promise<void> {
         bullet = new Bullet();
         app = new Application();
-        // world = new Container();
+        gameLevel = 1;
 
         await app.init({ backgroundColor: "#212842", width: GAME_WIDTH, height: GAME_HEIGHT });
 
@@ -91,9 +90,6 @@ console.log(
             game.aliensContainer.addChild(explosion);
         }
 
-        // let enemyShootTimer = 0;
-        // const enemyShootInterval = 60; //enemy shoot intrval 60fps
-
         gameOverScreen.visible = false;
 
         let enemyShootTimer = 0;
@@ -101,10 +97,6 @@ console.log(
 
         function enemyBulletSystem() {
             enemyShootTimer++;
-
-            // if (gameOver) {
-            //     return;
-            // }
 
             if (enemyShootTimer > enemyShootInterval) {
                 // has enough time pass
@@ -133,7 +125,9 @@ console.log(
         }
         function hasEnemyBelow(index: number) {
             // index === i
-            for (let j = index + 11; j < game.aliens.length; j += 11) {
+            const level = LEVELS[gameLevel - 1];
+
+            for (let j = index + level.colLength; j < game.aliens.length; j += level.colLength) {
                 if (game.aliens[j] !== null) {
                     return true; // we don't have death alien
                 }
@@ -143,7 +137,6 @@ console.log(
         }
 
         function shipEnemyCollision() {
-            // console.log("check collision");
 
             if (!bullet.shipBullet) return; // check if the bullet is null
 
@@ -188,7 +181,6 @@ console.log(
                     spaceShip.removeShip();
                     window.removeEventListener("keydown", playerFireBullet);
                     showGameOver();
-                    console.log("shoot", bullet.alienBullets);
                 }
             }
         }
@@ -208,13 +200,12 @@ console.log(
 
         app.ticker.add(() => {
             // game.enemiesMovement();
-            // enemyBulletSystem();
-            shipEnemyCollision();
-            enemyPlayerCollision();
-
             spaceShip.shipMovement(app);
             bullet.moveShipBullet(game.world);
             bullet.moveEnemyBullet(game.world);
+            enemyBulletSystem();
+            shipEnemyCollision();
+            enemyPlayerCollision();
         });
     }
 
@@ -232,6 +223,7 @@ console.log(
             }
         }
         window.addEventListener("keydown", playerFireBullet);
+
 
         game.world.addChild(spaceShip);
         game.world.addChild(game.aliensContainer);
@@ -265,3 +257,4 @@ console.log(
 // start and end (reset) function bez hardcoded settimeout
 // when aliens container hit ship game over
 // po vreme na dvijenie nqma koliziq
+// fix world in bullet class so the collisdion and explosion work properly  
