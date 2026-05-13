@@ -7,7 +7,7 @@ import { Bullet } from "./Bullet";
 import { Alien } from "./Alien";
 import { SheetTexture } from "./SheetTexture";
 import { GameOverScreen } from "./GameOverScreen";
-import {Game} from "./Game"
+import { Game } from "./Game";
 
 console.log(
     `%cPixiJS V8\nTypescript Boilerplate%c ${VERSION} %chttp://www.pixijs.com %c❤️`,
@@ -17,11 +17,9 @@ console.log(
 );
 
 (async () => {
-    // let world: Container; 
+    // let world: Container;
     let app: Application; //It is the main controller of the entire game.
     let bullet: Bullet;
-    let aliens: (Alien | null)[];
-    let aliensContainer: Container; // This container holds all the enemies
     let spaceShip: SpaceShip;
     let gameOver: boolean;
     // let gameLevel: number;
@@ -36,8 +34,6 @@ console.log(
 
     async function init(): Promise<void> {
         bullet = new Bullet();
-        aliens = [];
-        aliensContainer = new Container();
         app = new Application();
         // world = new Container();
 
@@ -60,7 +56,7 @@ console.log(
         const gameOverScreen = new GameOverScreen(app);
 
         spaceShip = new SpaceShip(shipTexture, app);
-       
+
         document.body.appendChild(app.canvas);
 
         resizeCanvas();
@@ -92,70 +88,69 @@ console.log(
 
             explosion.position.set(one?.x, one?.y);
             explosion.play();
-            aliensContainer.addChild(explosion);
+            game.aliensContainer.addChild(explosion);
         }
-        
-      
+
         // let enemyShootTimer = 0;
         // const enemyShootInterval = 60; //enemy shoot intrval 60fps
 
         gameOverScreen.visible = false;
-        
 
-      
+        let enemyShootTimer = 0;
+        const enemyShootInterval = 60; //enemy shoot intrval 60fps
 
-        // function enemyBulletSystem() {
-        //     enemyShootTimer++;
+        function enemyBulletSystem() {
+            enemyShootTimer++;
 
-        //     // if (gameOver) {
-        //     //     return;
-        //     // }
+            // if (gameOver) {
+            //     return;
+            // }
 
-        //     if (enemyShootTimer > enemyShootInterval) {
-        //         // has enough time pass
+            if (enemyShootTimer > enemyShootInterval) {
+                // has enough time pass
 
-        //         const shooters: Alien[] = []; // store the shooter enemies into an array
+                const shooters: Alien[] = []; // store the shooter enemies into an array
 
-        //         for (let i = 0; i < aliens.length; i++) {
-        //             // loop trough all the aliens and get alien on position i
-        //             const alien = aliens[i];
+                for (let i = 0; i < game.aliens.length; i++) {
+                    // loop trough all the aliens and get alien on position i
+                    const alien = game.aliens[i];
 
-        //             if (alien == null) continue; // if the picked alien is null (death) continue
+                    if (alien == null) continue; // if the picked alien is null (death) continue
 
-        //             if (!hasEnemyBelow(i)) {
-        //                 // if we have enemy below we do not push if there is no enemy we push
-        //                 shooters.push(alien);
-        //             }
-        //         }
-        //         if (shooters.length > 0) {
-        //             // if we have at least one enemy allowed to shoot
-        //             const randomShooter = shooters[Math.floor(Math.random() * shooters.length)];
+                    if (!hasEnemyBelow(i)) {
+                        // if we have enemy below we do not push if there is no enemy we push
+                        shooters.push(alien);
+                    }
+                }
+                if (shooters.length > 0) {
+                    // if we have at least one enemy allowed to shoot
+                    const randomShooter = shooters[Math.floor(Math.random() * shooters.length)];
 
-        //             bullet.createEnemyBullet(aliensContainer, randomShooter);
-        //             enemyShootTimer = 0;
-        //         }
-        //     }
-        // }
-        // function hasEnemyBelow(index: number) {
-        //     // index === i
-        //     for (let j = index + 11; j < aliens.length; j += 11) {
-        //         if (aliens[j] !== null) {
-        //             return true; // we don't have death alien
-        //         }
-        //     }
+                    bullet.createEnemyBullet(game.aliensContainer, randomShooter);
+                    enemyShootTimer = 0;
+                }
+            }
+        }
+        function hasEnemyBelow(index: number) {
+            // index === i
+            for (let j = index + 11; j < game.aliens.length; j += 11) {
+                if (game.aliens[j] !== null) {
+                    return true; // we don't have death alien
+                }
+            }
 
-        //     return false;
-        // }
+            return false;
+        }
 
         function shipEnemyCollision() {
             // console.log("check collision");
-            
+
             if (!bullet.shipBullet) return; // check if the bullet is null
 
             const bulletBounds = bullet.shipBullet.getBounds(); //get the boundaries of the bullet box
 
-            for (let i = 0; i < aliens.length; i++) {
-                const oneEnemy = aliens[i]; // we should know the index to get the alien coordinates because the alien is in an array
+            for (let i = 0; i < game.aliens.length; i++) {
+                const oneEnemy = game.aliens[i]; // we should know the index to get the alien coordinates because the alien is in an array
 
                 if (oneEnemy == null) continue;
 
@@ -169,7 +164,7 @@ console.log(
                 ) {
                     triggerExplosion(oneEnemy);
                     game.aliensContainer.removeChild(oneEnemy);
-                    aliens[i] = null;
+                    game.aliens[i] = null;
                     game.world.removeChild(bullet.shipBullet);
                     bullet.shipBullet = null;
 
@@ -200,20 +195,20 @@ console.log(
 
         function showGameOver() {
             gameOverScreen.visible = true;
-            game.world.removeChild(aliensContainer);
+            game.world.removeChild(game.aliensContainer);
             gameOver = true;
         }
-        game.world.addChild(game.aliensContainer);
+
         app.stage.addChild(game.world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
         app.stage.addChild(gameOverScreen);
         game.createAliensGroup(alienTexture);
         game.world.addChild(spaceShip);
-        game.world.addChild(aliensContainer);
+        game.world.addChild(game.aliensContainer);
         gameOver = false;
 
         app.ticker.add(() => {
-            // enemiesMovement();
-            game.enemyBulletSystem();
+            // game.enemiesMovement();
+            // enemyBulletSystem();
             shipEnemyCollision();
             enemyPlayerCollision();
 
@@ -224,8 +219,6 @@ console.log(
     }
 
     function reset() {
-        aliens = [];
-        aliensContainer = new Container();
         const shipTexture = Assets.get("ship");
 
         spaceShip = new SpaceShip(shipTexture, app);
@@ -239,10 +232,9 @@ console.log(
             }
         }
         window.addEventListener("keydown", playerFireBullet);
-        
 
         game.world.addChild(spaceShip);
-        game.world.addChild(aliensContainer);
+        game.world.addChild(game.aliensContainer);
         game.createAliensGroup(alienTexture);
         gameOver = false;
     }
@@ -271,4 +263,5 @@ console.log(
 // remove bullets when player is killed (optional explosion when hit player) and check if the ship is destroyed removeEventlistener
 // when we are death remove everything from the background and after restart to begin the game
 // start and end (reset) function bez hardcoded settimeout
-// when aliens container hit ship game over 
+// when aliens container hit ship game over
+// po vreme na dvijenie nqma koliziq

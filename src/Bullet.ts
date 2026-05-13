@@ -26,7 +26,7 @@ export class Bullet {
 
         world.addChild(this.shipBullet); // add the bullet into the container(stage)
     }
-    public createEnemyBullet(aliensContainer: Container, alien: Alien){
+    public createEnemyBullet(alienContainer: Container, alien: Alien){
         const alienBullet = new Graphics();
 
         alienBullet.rect(-2, -20, 3, 10);
@@ -35,7 +35,7 @@ export class Bullet {
         
         alienBullet.position.set(alien.x, alien.y + 20)
         this.alienBullets.push(alienBullet);
-       aliensContainer.addChild(alienBullet);
+       alienContainer.addChild(alienBullet);
     //    console.log("create world", alienContainer.addChild(alienBullet));
        
     }
