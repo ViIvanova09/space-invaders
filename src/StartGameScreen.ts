@@ -21,10 +21,17 @@ export class StartGameScreen extends Container {
        
         this.button = new Graphics()
             .rect(0, 0, 200, 80)
+            .fill({color: 0xff1010, alpha: 0.5})
 
-
+            this.button.x = GAME_WIDTH / 2 - 100;
+            this.button.y = GAME_HEIGHT / 2 - 90;
+            this.button.interactive = true;
+            this.button.cursor = "pointer"
             this.title.x = GAME_WIDTH / 2 - 170;
             this.title.y = GAME_HEIGHT / 2 - 100;
+
             this.addChild(this.title)
+            this.addChild(this.button)
+           
     }
 }

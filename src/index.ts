@@ -107,6 +107,8 @@ console.log(
         }
 
         gameOverScreen.visible = false;
+        // startGameScreen.visible = true;
+        //  app.ticker.stop();
        
         let enemyShootTimer = 0;
         const enemyShootInterval = 60; //enemy shoot intrval 60fps
@@ -225,13 +227,15 @@ console.log(
             game.removeAliensGroup();
             gameOver = true;
         }
+
         // function showStartGame(){
-        //      app.ticker.stop(); // Stop blinking ticker
+        //     app.ticker.start(); // Stop blinking ticker
         //     app.stage.removeChild(startGameScreen); 
-            
         // }
+
         app.stage.addChild(game.world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
         app.stage.addChild(gameOverScreen);
+        // app.stage.addChild(startGameScreen)
         game.createAliensGroup(alienTexture);
         game.world.addChild(spaceShip);
         game.world.addChild(game.aliensContainer);
@@ -243,6 +247,7 @@ console.log(
             // }
 
             // game.enemiesMovement();
+            // showStartGame();
             spaceShip.shipMovement(app);
             bullet.moveShipBullet(game.world);
             bullet.moveEnemyBullet(game.world);
