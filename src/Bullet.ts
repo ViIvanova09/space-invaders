@@ -26,16 +26,16 @@ export class Bullet {
 
         world.addChild(this.shipBullet); // add the bullet into the container(stage)
     }
-    public createEnemyBullet(aliensContainer: Container, alien: Alien){
+    public createEnemyBullet(alienContainer: Container, alien: Alien){
         const alienBullet = new Graphics();
-
+        
         alienBullet.rect(-2, -20, 3, 10);
         alienBullet.fill({color: 16777215 }) // color white
-        alienBullet.position.set(alien.x, alien.y); 
         
         alienBullet.position.set(alien.x, alien.y + 20)
         this.alienBullets.push(alienBullet);
-        aliensContainer.addChild(alienBullet);
+        alienContainer.addChild(alienBullet);
+       
     }
     public moveShipBullet(world: Container) {
         if (this.shipBullet) {
@@ -52,10 +52,12 @@ export class Bullet {
         
         
         alienBullet.y += 6;
+        
         if (alienBullet.y > GAME_HEIGHT) {
                 world.removeChild(alienBullet);
+                
                 this.alienBullets.splice(i, 1)
             }
         }
-    }   
+    }  
 }

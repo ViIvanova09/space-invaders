@@ -21,7 +21,6 @@ export class SpaceShip extends GameElements {
     public keyDownMovement(key: string) {
         if (key === "ArrowLeft") {
             this.arrowLeft = true;
-            console.log("movr", this.arrowLeft);
             
         }
 
@@ -67,9 +66,6 @@ export class SpaceShip extends GameElements {
         // that removes itself from any parent it has 
         if (this.parent) {
             this.parent.removeChild(this);
-
-        }
-
-        // this.destroy({texture: false})
+        }    
     }
 }
