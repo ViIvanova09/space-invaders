@@ -28,15 +28,13 @@ export class Bullet {
     }
     public createEnemyBullet(alienContainer: Container, alien: Alien){
         const alienBullet = new Graphics();
-
+        
         alienBullet.rect(-2, -20, 3, 10);
         alienBullet.fill({color: 16777215 }) // color white
-        alienBullet.position.set(alien.x, alien.y); 
         
         alienBullet.position.set(alien.x, alien.y + 20)
         this.alienBullets.push(alienBullet);
-       alienContainer.addChild(alienBullet);
-    //    console.log("create world", alienContainer.addChild(alienBullet));
+        alienContainer.addChild(alienBullet);
        
     }
     public moveShipBullet(world: Container) {
@@ -57,7 +55,6 @@ export class Bullet {
         
         if (alienBullet.y > GAME_HEIGHT) {
                 world.removeChild(alienBullet);
-                console.log("word", world);
                 
                 this.alienBullets.splice(i, 1)
             }

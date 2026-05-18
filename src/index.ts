@@ -52,7 +52,7 @@ console.log(
         const alienTexture = Assets.get("alien");
 
         game = new Game();
-        const gameOverScreen = new GameOverScreen(app);
+        const gameOverScreen = new GameOverScreen();
 
         spaceShip = new SpaceShip(shipTexture, app);
 
@@ -68,13 +68,14 @@ console.log(
         }
         window.addEventListener("keydown", playerFireBullet);
 
-        function restartGame(e: KeyboardEvent) {
-            if (e.key === "r" && gameOverScreen.visible) {
+        function restartGame() {
+            if (gameOverScreen.visible) {
                 gameOverScreen.visible = false;
                 reset();
             }
         }
-        window.addEventListener("keydown", restartGame);
+
+        gameOverScreen.button.on("pointerdown", restartGame);
 
         window.addEventListener("keyup", (e) => {
             spaceShip.keyUpMovement(e.key);
@@ -137,7 +138,6 @@ console.log(
         }
 
         function shipEnemyCollision() {
-
             if (!bullet.shipBullet) return; // check if the bullet is null
 
             const bulletBounds = bullet.shipBullet.getBounds(); //get the boundaries of the bullet box
@@ -156,6 +156,8 @@ console.log(
                     bulletBounds.minY < aliensBounds.maxY
                 ) {
                     triggerExplosion(oneEnemy);
+                    console.log("shoot", triggerExplosion(oneEnemy));
+
                     game.aliensContainer.removeChild(oneEnemy);
                     game.aliens[i] = null;
                     game.world.removeChild(bullet.shipBullet);
@@ -177,10 +179,24 @@ console.log(
                     enemyBulletBounds.maxY > shipBounds.minY &&
                     enemyBulletBounds.minY < shipBounds.maxY
                 ) {
-                    game.world.removeChild(spaceShip);
-                    spaceShip.removeShip();
-                    window.removeEventListener("keydown", playerFireBullet);
                     showGameOver();
+                    // console.log("eenemybullet", enemyBulletBounds);
+                }
+            }
+        }
+
+        function enemyContainerCollision() {
+            const shipBounds = spaceShip.getBounds();
+
+            for (const alien of game.aliens) {
+                if (alien === null) continue;
+
+                const alienBounds = alien.getBounds();
+
+                if (alienBounds.bottom >= shipBounds.top) {
+                    showGameOver();
+
+                    return; // stops the function after gameover
                 }
             }
         }
@@ -188,6 +204,10 @@ console.log(
         function showGameOver() {
             gameOverScreen.visible = true;
             game.world.removeChild(game.aliensContainer);
+            game.world.removeChild(spaceShip);
+            spaceShip.removeShip();
+            window.removeEventListener("keydown", playerFireBullet);
+            game.removeAliensGroup();
             gameOver = true;
         }
 
@@ -199,12 +219,17 @@ console.log(
         gameOver = false;
 
         app.ticker.add(() => {
+            // if(!gameOver){
+            //     return
+            // }
+
             // game.enemiesMovement();
             spaceShip.shipMovement(app);
             bullet.moveShipBullet(game.world);
             bullet.moveEnemyBullet(game.world);
             enemyBulletSystem();
             shipEnemyCollision();
+            enemyContainerCollision();
             enemyPlayerCollision();
         });
     }
@@ -217,6 +242,10 @@ console.log(
         const alienTexture = Assets.get("alien");
 
         function playerFireBullet(e: KeyboardEvent) {
+            if (gameOver) {
+                return;
+            }
+
             spaceShip.keyDownMovement(e.key);
             if (e.code === "Space") {
                 bullet.createPlayerBullet(spaceShip, game.world);
@@ -224,11 +253,11 @@ console.log(
         }
         window.addEventListener("keydown", playerFireBullet);
 
-
         game.world.addChild(spaceShip);
         game.world.addChild(game.aliensContainer);
         game.createAliensGroup(alienTexture);
         gameOver = false;
+        // console.log("create", game.createAliensGroup(alienTexture));
     }
 
     function resizeCanvas(): void {
@@ -252,9 +281,4 @@ console.log(
     }
 })();
 
-// remove bullets when player is killed (optional explosion when hit player) and check if the ship is destroyed removeEventlistener
-// when we are death remove everything from the background and after restart to begin the game
-// start and end (reset) function bez hardcoded settimeout
-// when aliens container hit ship game over
-// po vreme na dvijenie nqma koliziq
-// fix world in bullet class so the collisdion and explosion work properly  
+// fix world in bullet class so the collisdion and explosion work properly
