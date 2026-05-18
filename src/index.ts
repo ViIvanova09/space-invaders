@@ -7,6 +7,7 @@ import { Bullet } from "./Bullet";
 import { Alien } from "./Alien";
 import { SheetTexture } from "./SheetTexture";
 import { GameOverScreen } from "./GameOverScreen";
+import {StartGameScreen} from "./StartGameScreen";
 import { Game } from "./Game";
 
 console.log(
@@ -54,6 +55,10 @@ console.log(
         game = new Game();
         const gameOverScreen = new GameOverScreen();
 
+        const startGameScreen = new StartGameScreen();
+
+
+
         spaceShip = new SpaceShip(shipTexture, app);
 
         document.body.appendChild(app.canvas);
@@ -77,6 +82,16 @@ console.log(
 
         gameOverScreen.button.on("pointerdown", restartGame);
 
+        
+        // function startGame() {
+        //     if (startGameScreen.visible) {
+        //         startGameScreen.visible = false;
+        //         init();
+        //     }
+        // }
+
+        // startGameScreen.button.on("pointerdown", startGame);
+    
         window.addEventListener("keyup", (e) => {
             spaceShip.keyUpMovement(e.key);
         });
@@ -92,7 +107,7 @@ console.log(
         }
 
         gameOverScreen.visible = false;
-
+       
         let enemyShootTimer = 0;
         const enemyShootInterval = 60; //enemy shoot intrval 60fps
 
@@ -210,7 +225,11 @@ console.log(
             game.removeAliensGroup();
             gameOver = true;
         }
-
+        // function showStartGame(){
+        //      app.ticker.stop(); // Stop blinking ticker
+        //     app.stage.removeChild(startGameScreen); 
+            
+        // }
         app.stage.addChild(game.world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
         app.stage.addChild(gameOverScreen);
         game.createAliensGroup(alienTexture);

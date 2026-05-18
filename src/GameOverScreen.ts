@@ -2,9 +2,9 @@ import { Container, Graphics, Text } from "pixi.js";
 import { GAME_HEIGHT, GAME_WIDTH } from "./Constants";
 
 export class GameOverScreen extends Container {
+    button: Graphics;
     title: Text;
     subtitle: Text;
-    button: Graphics;
     constructor(){
         super()
         this.button = new Graphics()
