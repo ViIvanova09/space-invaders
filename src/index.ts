@@ -74,23 +74,23 @@ console.log(
         function restartGame() {
             if (gameOverScreen.visible) {
                 gameOverScreen.visible = false;
+
                 reset();
             }
         }
 
-        gameOverScreen.button.on("pointerdown", restartGame);
+        gameOverScreen.restartButton.on("pointerdown", restartGame);
 
-        function startGame() {
-            if (startGameScreen.visible) {
-                startGameScreen.visible = false;
-                game.world.visible = true;
-                app.stage.removeChild(startGameScreen);
-                game.createAliensGroup(alienTexture);
-                // app.ticker.start(); 
-            }
-        }
+        // function startGame() {
+        //     if (startGameScreen.visible) {
+        //         startGameScreen.visible = false;
+        //         game.world.visible = true;
+        //         app.stage.removeChild(startGameScreen);
 
-        startGameScreen.button.on("pointerdown", startGame);
+        //     }
+        // }
+
+        // startGameScreen.startButton.on("pointerdown", startGame);
 
         window.addEventListener("keyup", (e) => {
             spaceShip.keyUpMovement(e.key);
@@ -107,9 +107,8 @@ console.log(
         }
 
         gameOverScreen.visible = false;
-        startGameScreen.visible = true;
-        game.world.visible = false;
-        // app.ticker.stop();
+        // startGameScreen.visible = true;
+        game.world.visible = true;
 
         let enemyShootTimer = 0;
         const enemyShootInterval = 60; //enemy shoot intrval 60fps
@@ -174,7 +173,6 @@ console.log(
                     bulletBounds.minY < aliensBounds.maxY
                 ) {
                     triggerExplosion(oneEnemy);
-                    console.log("shoot", triggerExplosion(oneEnemy));
 
                     game.aliensContainer.removeChild(oneEnemy);
                     game.aliens[i] = null;
@@ -198,7 +196,6 @@ console.log(
                     enemyBulletBounds.minY < shipBounds.maxY
                 ) {
                     showGameOver();
-                    // console.log("eenemybullet", enemyBulletBounds);
                 }
             }
         }
@@ -221,6 +218,7 @@ console.log(
 
         function showGameOver() {
             gameOverScreen.visible = true;
+            // startGameScreen.visible = false;
             game.world.removeChild(game.aliensContainer);
             game.world.removeChild(spaceShip);
             spaceShip.removeShip();
@@ -230,9 +228,10 @@ console.log(
         }
 
         app.stage.addChild(game.world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
+        // app.stage.addChild(startGameScreen);
         app.stage.addChild(gameOverScreen);
-        app.stage.addChild(startGameScreen)
         game.world.addChild(spaceShip);
+        game.createAliensGroup(alienTexture);
         game.world.addChild(game.aliensContainer);
 
         gameOver = false;
@@ -242,7 +241,7 @@ console.log(
             //     return
             // }
 
-            // game.enemiesMovement();
+            game.enemiesMovement();
             spaceShip.shipMovement(app);
             bullet.moveShipBullet(game.world);
             bullet.moveEnemyBullet(game.world);
@@ -276,7 +275,6 @@ console.log(
         game.world.addChild(game.aliensContainer);
         game.createAliensGroup(alienTexture);
         gameOver = false;
-        // console.log("create", game.createAliensGroup(alienTexture));
     }
 
     function resizeCanvas(): void {
