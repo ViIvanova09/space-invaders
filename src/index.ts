@@ -81,16 +81,16 @@ console.log(
 
         gameOverScreen.restartButton.on("pointerdown", restartGame);
 
-        // function startGame() {
-        //     if (startGameScreen.visible) {
-        //         startGameScreen.visible = false;
-        //         game.world.visible = true;
-        //         app.stage.removeChild(startGameScreen);
+        function startGame() {
+            if (startGameScreen.visible) {
+                startGameScreen.visible = false;
+                game.world.visible = true;
+                app.stage.removeChild(startGameScreen);
 
-        //     }
-        // }
+            }
+        }
 
-        // startGameScreen.startButton.on("pointerdown", startGame);
+        startGameScreen.startButton.on("pointerdown", startGame);
 
         window.addEventListener("keyup", (e) => {
             spaceShip.keyUpMovement(e.key);
@@ -107,8 +107,8 @@ console.log(
         }
 
         gameOverScreen.visible = false;
-        // startGameScreen.visible = true;
-        game.world.visible = true;
+        startGameScreen.visible = true;
+        game.world.visible = false;
 
         let enemyShootTimer = 0;
         const enemyShootInterval = 60; //enemy shoot intrval 60fps
@@ -217,19 +217,19 @@ console.log(
         }
 
         function showGameOver() {
+            gameOver = true
+            app.stage.addChild(gameOverScreen);
             gameOverScreen.visible = true;
-            // startGameScreen.visible = false;
+            startGameScreen.visible = false;
             game.world.removeChild(game.aliensContainer);
             game.world.removeChild(spaceShip);
             spaceShip.removeShip();
             window.removeEventListener("keydown", playerFireBullet);
             game.removeAliensGroup();
-            gameOver = true;
         }
 
         app.stage.addChild(game.world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
-        // app.stage.addChild(startGameScreen);
-        app.stage.addChild(gameOverScreen);
+        app.stage.addChild(startGameScreen);
         game.world.addChild(spaceShip);
         game.createAliensGroup(alienTexture);
         game.world.addChild(game.aliensContainer);
@@ -298,4 +298,4 @@ console.log(
     }
 })();
 
-// fix world in bullet class so the collisdion and explosion work properly
+// трябва ли да се дестройне текстурата на кораба при рестарт
