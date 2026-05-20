@@ -36,7 +36,7 @@ export class StartGameScreen extends Container {
             this.startButton.y = GAME_HEIGHT / 2;
             this.startButton.interactive = true;
             this.startButton.cursor = "pointer"
-            this.title.x = GAME_WIDTH / 2 - 230;
+            this.title.x = GAME_WIDTH / 2 - 210;
             this.title.y = GAME_HEIGHT / 2 - 190;
             this.buttonText.x = GAME_WIDTH / 2 - 65;
             this.buttonText.y = GAME_HEIGHT / 2 + 25;
@@ -44,7 +44,6 @@ export class StartGameScreen extends Container {
             this.addChild(this.title)
             this.addChild(this.startButton)
             this.addChild(this.buttonText)
-           console.error("fkddk");
            
     }
 }

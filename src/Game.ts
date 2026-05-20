@@ -25,7 +25,7 @@ export class Game {
     }
     public createAliensGroup(alienTexture: Texture) {
         this.aliensContainer.x = 80;
-        this.aliensContainer.y = 60;
+        this.aliensContainer.y = 85;
         // const level = LEVELS[this.gameLevel - 1];
 
         for (let row = 0; row < this.currentLevel.rowLength; row++) {

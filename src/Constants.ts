@@ -1,11 +1,13 @@
 export const GAME_HEIGHT = window.innerHeight;
 export const GAME_WIDTH = window.innerWidth;
+export const healthBarWidth = 200
+export const healthBarHight = 20
 export const LEVELS = [
     {
         level: 1,
         rowLength: 5,
         colLength: 11,
-        speed: 1,
+        speed: 5,
     },
     {
         level: 2,

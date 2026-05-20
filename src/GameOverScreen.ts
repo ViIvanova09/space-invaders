@@ -44,6 +44,5 @@ export class GameOverScreen extends Container {
         this.addChild(this.restartButton)
         this.addChild(this.title)
         this.addChild(this.subtitle)
-        console.error("ddkdk")
     }
 }
