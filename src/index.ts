@@ -6,6 +6,8 @@ import { GAME_HEIGHT, GAME_WIDTH, LEVELS } from "./Constants";
 import { Bullet } from "./Bullet";
 import { Alien } from "./Alien";
 import { SheetTexture } from "./SheetTexture";
+import {PlayerHealthBar} from "./PlayerHealthBar";
+import { StartGameScreen } from "./StartGameScreen";
 import { GameOverScreen } from "./GameOverScreen";
 import { Game } from "./Game";
 
@@ -52,7 +54,10 @@ console.log(
         const alienTexture = Assets.get("alien");
 
         game = new Game();
+
+        const startGameScreen = new StartGameScreen();
         const gameOverScreen = new GameOverScreen();
+        const healthBar = new PlayerHealthBar();
 
         spaceShip = new SpaceShip(shipTexture, app);
 
@@ -68,14 +73,25 @@ console.log(
         }
         window.addEventListener("keydown", playerFireBullet);
 
+        function startGame() {
+            if (startGameScreen.visible) {
+                startGameScreen.visible = false;
+                game.world.visible = true;
+                app.stage.removeChild(startGameScreen);
+                gameOver = false;
+            }
+        }
+
         function restartGame() {
             if (gameOverScreen.visible) {
                 gameOverScreen.visible = false;
+
                 reset();
             }
         }
 
-        gameOverScreen.button.on("pointerdown", restartGame);
+        startGameScreen.startButton.on("pointerdown", startGame);
+        gameOverScreen.restartButton.on("pointerdown", restartGame);
 
         window.addEventListener("keyup", (e) => {
             spaceShip.keyUpMovement(e.key);
@@ -91,7 +107,9 @@ console.log(
             game.aliensContainer.addChild(explosion);
         }
 
+        game.world.visible = false;
         gameOverScreen.visible = false;
+        startGameScreen.visible = true;
 
         let enemyShootTimer = 0;
         const enemyShootInterval = 60; //enemy shoot intrval 60fps
@@ -156,7 +174,6 @@ console.log(
                     bulletBounds.minY < aliensBounds.maxY
                 ) {
                     triggerExplosion(oneEnemy);
-                    console.log("shoot", triggerExplosion(oneEnemy));
 
                     game.aliensContainer.removeChild(oneEnemy);
                     game.aliens[i] = null;
@@ -180,7 +197,6 @@ console.log(
                     enemyBulletBounds.minY < shipBounds.maxY
                 ) {
                     showGameOver();
-                    // console.log("eenemybullet", enemyBulletBounds);
                 }
             }
         }
@@ -202,32 +218,36 @@ console.log(
         }
 
         function showGameOver() {
+            gameOver = true;
+            app.stage.addChild(gameOverScreen);
             gameOverScreen.visible = true;
+            startGameScreen.visible = false;
             game.world.removeChild(game.aliensContainer);
             game.world.removeChild(spaceShip);
             spaceShip.removeShip();
             window.removeEventListener("keydown", playerFireBullet);
             game.removeAliensGroup();
-            gameOver = true;
         }
 
         app.stage.addChild(game.world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
-        app.stage.addChild(gameOverScreen);
-        game.createAliensGroup(alienTexture);
+        app.stage.addChild(startGameScreen);
+        game.world.addChild(healthBar);
         game.world.addChild(spaceShip);
+        game.createAliensGroup(alienTexture);
         game.world.addChild(game.aliensContainer);
-        gameOver = false;
+
+        gameOver = true;
 
         app.ticker.add(() => {
-            // if(!gameOver){
-            //     return
-            // }
+            if (gameOver) {
+                return;
+            }
 
-            // game.enemiesMovement();
+            game.enemiesMovement();
             spaceShip.shipMovement(app);
             bullet.moveShipBullet(game.world);
             bullet.moveEnemyBullet(game.world);
-            enemyBulletSystem();
+            // enemyBulletSystem();
             shipEnemyCollision();
             enemyContainerCollision();
             enemyPlayerCollision();
@@ -257,7 +277,6 @@ console.log(
         game.world.addChild(game.aliensContainer);
         game.createAliensGroup(alienTexture);
         gameOver = false;
-        // console.log("create", game.createAliensGroup(alienTexture));
     }
 
     function resizeCanvas(): void {
@@ -281,4 +300,4 @@ console.log(
     }
 })();
 
-// fix world in bullet class so the collisdion and explosion work properly
+// трябва ли да се дестройне текстурата на кораба при рестарт
