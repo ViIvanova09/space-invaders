@@ -57,6 +57,7 @@ export class Bullet {
                 world.removeChild(alienBullet);
                 
                 this.alienBullets.splice(i, 1)
+                alienBullet.destroy()
             }
         }
     }  
