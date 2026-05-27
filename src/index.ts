@@ -6,7 +6,7 @@ import { GAME_HEIGHT, GAME_WIDTH, LEVELS } from "./Constants";
 import { Bullet } from "./Bullet";
 import { Alien } from "./Alien";
 import { SheetTexture } from "./SheetTexture";
-import {PlayerHealthBar} from "./PlayerHealthBar";
+import { PlayerHealthBar } from "./PlayerHealthBar";
 import { StartGameScreen } from "./StartGameScreen";
 import { GameOverScreen } from "./GameOverScreen";
 import { Game } from "./Game";
@@ -25,6 +25,9 @@ console.log(
     let gameOver: boolean;
     let gameLevel: number;
     let game: Game;
+    let health: number;
+    let playerLives: number;
+    let healthBar: PlayerHealthBar;
 
     //await window load
     await new Promise((resolve) => {
@@ -36,8 +39,10 @@ console.log(
     async function init(): Promise<void> {
         bullet = new Bullet();
         app = new Application();
+        healthBar = new PlayerHealthBar();
         gameLevel = 1;
-
+        health = 50;
+        playerLives = 3;
         await app.init({ backgroundColor: "#212842", width: GAME_WIDTH, height: GAME_HEIGHT });
 
         const manifest = {
@@ -57,7 +62,6 @@ console.log(
 
         const startGameScreen = new StartGameScreen();
         const gameOverScreen = new GameOverScreen();
-        const healthBar = new PlayerHealthBar();
 
         spaceShip = new SpaceShip(shipTexture, app);
 
@@ -187,7 +191,8 @@ console.log(
 
         function enemyPlayerCollision() {
             for (let i = 0; i < bullet.alienBullets.length; i++) {
-                const enemyBulletBounds = bullet.alienBullets[i].getBounds();
+                const enemyBullet = bullet.alienBullets[i];
+                const enemyBulletBounds = enemyBullet.getBounds();
                 const shipBounds = spaceShip.getBounds();
 
                 if (
@@ -196,7 +201,10 @@ console.log(
                     enemyBulletBounds.maxY > shipBounds.minY &&
                     enemyBulletBounds.minY < shipBounds.maxY
                 ) {
-                    showGameOver();
+                    playerHealthNav();
+                    game.world.removeChild(enemyBullet);
+                    bullet.alienBullets.splice(i, 1);
+                    enemyBullet.destroy();
                 }
             }
         }
@@ -228,6 +236,20 @@ console.log(
             window.removeEventListener("keydown", playerFireBullet);
             game.removeAliensGroup();
         }
+        function playerHealthNav() {
+
+            playerLives--;
+
+            healthBar.healthBarWidth -= health;
+            healthBar.updateHealthBar();
+            console.log("health", health);
+
+            console.log("update", healthBar.healthBarWidth);
+
+            if (playerLives <= 0) {
+                showGameOver();
+            }
+        }
 
         app.stage.addChild(game.world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
         app.stage.addChild(startGameScreen);
@@ -247,7 +269,7 @@ console.log(
             spaceShip.shipMovement(app);
             bullet.moveShipBullet(game.world);
             bullet.moveEnemyBullet(game.world);
-            // enemyBulletSystem();
+            enemyBulletSystem();
             shipEnemyCollision();
             enemyContainerCollision();
             enemyPlayerCollision();
@@ -260,6 +282,10 @@ console.log(
         spaceShip = new SpaceShip(shipTexture, app);
 
         const alienTexture = Assets.get("alien");
+
+        playerLives = 3;
+
+        healthBar.resetBar();
 
         function playerFireBullet(e: KeyboardEvent) {
             if (gameOver) {
@@ -299,5 +325,3 @@ console.log(
         window.addEventListener("resize", resize);
     }
 })();
-
-// трябва ли да се дестройне текстурата на кораба при рестарт
