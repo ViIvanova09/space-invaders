@@ -1,5 +1,6 @@
 import { Container, Graphics } from "pixi.js";
 import { GAME_WIDTH } from "./Constants";
+// import { gsap } from "gsap/gsap-core";
 
 export class PlayerHealthBar extends Container {
     healthBar: Graphics;
