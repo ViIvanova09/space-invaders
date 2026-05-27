@@ -26,7 +26,7 @@ console.log(
     let gameLevel: number;
     let game: Game;
     let health: number;
-    // let playerLives: number;
+    let playerLives: number;
 
     //await window load
     await new Promise((resolve) => {
@@ -40,7 +40,7 @@ console.log(
         app = new Application();
         gameLevel = 1;
         health = 50;
-        // playerLives = 3;
+        playerLives = 3;
         await app.init({ backgroundColor: "#212842", width: GAME_WIDTH, height: GAME_HEIGHT });
 
         const manifest = {
@@ -237,34 +237,38 @@ console.log(
             window.removeEventListener("keydown", playerFireBullet);
             game.removeAliensGroup();
         }
-        // function playerHealthNav() {
-        //     playerLives--;
+        function playerHealthNav() {
+            if(gameOver){
+                return
+            }
+            
+            playerLives--;
         
-        //     healthBar.healthBarWidth -= health;
-        //     healthBar.updateHealthBar();
-        //         console.log("health", health);
+            healthBar.healthBarWidth -= health;
+            healthBar.updateHealthBar();
+                console.log("health", health);
                 
-        //        console.log("update", healthBar.healthBarWidth);
+               console.log("update", healthBar.healthBarWidth);
             
 
-        //     if (playerLives <= 0) {
+            if (playerLives <= 0) {
                 
-        //         showGameOver()
+                showGameOver()
 
-        //     }
-        // }
-        function playerHealthNav(){
-            healthBar.healthBarWidth -= health
-            if(healthBar.healthBarWidth < 0){
-                healthBar.healthBarWidth = 0
             }
-
-             healthBar.updateHealthBar();
-
-             if(healthBar.healthBarWidth === 0){
-                 showGameOver()
-             }
         }
+        // function playerHealthNav(){
+        //     healthBar.healthBarWidth -= health
+        //     if(healthBar.healthBarWidth < 0){
+        //         healthBar.healthBarWidth = 0
+        //     }
+
+        //      healthBar.updateHealthBar();
+
+        //      if(healthBar.healthBarWidth === 0){
+        //          showGameOver()
+        //      }
+        // }
         app.stage.addChild(game.world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
         app.stage.addChild(startGameScreen);
         game.world.addChild(healthBar);
@@ -291,7 +295,6 @@ console.log(
     }
 
     function reset() {
-        // playerLives = 3;
        
         const shipTexture = Assets.get("ship");
 
@@ -301,9 +304,11 @@ console.log(
 
         const healthBar = new PlayerHealthBar();
 
+        playerLives = 3;
+        
+        healthBar.healthBarWidth = 150
+        healthBar.updateHealthBar()
        
-        // healthBar.updateHealthBar();
-        //  health = 50;
        console.log("update5", healthBar.healthBarWidth);
        
 
