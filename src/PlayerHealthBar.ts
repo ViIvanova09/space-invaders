@@ -4,11 +4,11 @@ import { GAME_WIDTH } from "./Constants";
 export class PlayerHealthBar extends Container {
     healthBar: Graphics;
     healthBarWidth: number;
-    maxHealthBarWidth: number;
+    // maxHealthBarWidth: number;
     constructor() {
         super();
         this.healthBarWidth = 150;
-        this.maxHealthBarWidth = 150;
+        // this.maxHealthBarWidth = 150;
         this.healthBar = new Graphics()
             .rect(0, 0, this.healthBarWidth, 20)
             .fill(0xff1010);
@@ -27,5 +27,9 @@ export class PlayerHealthBar extends Container {
         console.log('update2', this.healthBarWidth);
         
         this.healthBar.fill(0xff1010);
+    }
+    public resetBar(){
+        this.healthBarWidth = 150;
+        this.updateHealthBar();
     }
 }

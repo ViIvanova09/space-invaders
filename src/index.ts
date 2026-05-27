@@ -27,6 +27,7 @@ console.log(
     let game: Game;
     let health: number;
     let playerLives: number;
+    let healthBar: PlayerHealthBar;
 
     //await window load
     await new Promise((resolve) => {
@@ -38,6 +39,7 @@ console.log(
     async function init(): Promise<void> {
         bullet = new Bullet();
         app = new Application();
+        healthBar = new PlayerHealthBar();
         gameLevel = 1;
         health = 50;
         playerLives = 3;
@@ -60,7 +62,6 @@ console.log(
 
         const startGameScreen = new StartGameScreen();
         const gameOverScreen = new GameOverScreen();
-        const healthBar = new PlayerHealthBar();
 
         spaceShip = new SpaceShip(shipTexture, app);
 
@@ -113,7 +114,7 @@ console.log(
         game.world.visible = false;
         gameOverScreen.visible = false;
         startGameScreen.visible = true;
-        
+
         let enemyShootTimer = 0;
         const enemyShootInterval = 60; //enemy shoot intrval 60fps
 
@@ -189,7 +190,6 @@ console.log(
         }
 
         function enemyPlayerCollision() {
-       
             for (let i = 0; i < bullet.alienBullets.length; i++) {
                 const enemyBullet = bullet.alienBullets[i];
                 const enemyBulletBounds = enemyBullet.getBounds();
@@ -201,7 +201,6 @@ console.log(
                     enemyBulletBounds.maxY > shipBounds.minY &&
                     enemyBulletBounds.minY < shipBounds.maxY
                 ) {
-                    
                     playerHealthNav();
                     game.world.removeChild(enemyBullet);
                     bullet.alienBullets.splice(i, 1);
@@ -238,37 +237,20 @@ console.log(
             game.removeAliensGroup();
         }
         function playerHealthNav() {
-            if(gameOver){
-                return
-            }
-            
+
             playerLives--;
-        
+
             healthBar.healthBarWidth -= health;
             healthBar.updateHealthBar();
-                console.log("health", health);
-                
-               console.log("update", healthBar.healthBarWidth);
-            
+            console.log("health", health);
+
+            console.log("update", healthBar.healthBarWidth);
 
             if (playerLives <= 0) {
-                
-                showGameOver()
-
+                showGameOver();
             }
         }
-        // function playerHealthNav(){
-        //     healthBar.healthBarWidth -= health
-        //     if(healthBar.healthBarWidth < 0){
-        //         healthBar.healthBarWidth = 0
-        //     }
 
-        //      healthBar.updateHealthBar();
-
-        //      if(healthBar.healthBarWidth === 0){
-        //          showGameOver()
-        //      }
-        // }
         app.stage.addChild(game.world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
         app.stage.addChild(startGameScreen);
         game.world.addChild(healthBar);
@@ -295,24 +277,16 @@ console.log(
     }
 
     function reset() {
-       
         const shipTexture = Assets.get("ship");
 
         spaceShip = new SpaceShip(shipTexture, app);
 
         const alienTexture = Assets.get("alien");
 
-        const healthBar = new PlayerHealthBar();
-
         playerLives = 3;
-        
-        healthBar.healthBarWidth = 150
-        healthBar.updateHealthBar()
-       
-       console.log("update5", healthBar.healthBarWidth);
-       
 
-       
+        healthBar.resetBar();
+
         function playerFireBullet(e: KeyboardEvent) {
             if (gameOver) {
                 return;
@@ -328,7 +302,6 @@ console.log(
         game.world.addChild(spaceShip);
         game.world.addChild(game.aliensContainer);
         game.createAliensGroup(alienTexture);
-        game.world.addChild(healthBar)
         gameOver = false;
     }
 
