@@ -25,7 +25,6 @@ export class PlayerHealthBar extends Container {
         this.healthBar.clear();
         
         this.healthBar.rect(0, 0, this.healthBarWidth, 20);
-        console.log('update2', this.healthBarWidth);
         
         this.healthBar.fill(0xff1010);
     }

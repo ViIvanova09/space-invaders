@@ -10,6 +10,7 @@ import { PlayerHealthBar } from "./PlayerHealthBar";
 import { StartGameScreen } from "./StartGameScreen";
 import { GameOverScreen } from "./GameOverScreen";
 import { Game } from "./Game";
+import { gsap } from "gsap";
 
 console.log(
     `%cPixiJS V8\nTypescript Boilerplate%c ${VERSION} %chttp://www.pixijs.com %c❤️`,
@@ -237,14 +238,16 @@ console.log(
             game.removeAliensGroup();
         }
         function playerHealthNav() {
-
             playerLives--;
 
-            healthBar.healthBarWidth -= health;
-            healthBar.updateHealthBar();
-            console.log("health", health);
-
-            console.log("update", healthBar.healthBarWidth);
+            gsap.to(healthBar, {
+                healthBarWidth: healthBar.healthBarWidth - health,
+                duration: 0.3,
+                ease: "power2.out",
+                onUpdate: () => {
+                    healthBar.updateHealthBar();
+                },
+            });
 
             if (playerLives <= 0) {
                 showGameOver();
