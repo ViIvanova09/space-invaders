@@ -30,8 +30,8 @@ export class Game {
 
         for (let row = 0; row < this.currentLevel.rowLength; row++) {
             for (let col = 0; col < this.currentLevel.colLength; col++) {
-                const x1 = col * 40; // Spacing horizontally
-                const y1 = row * 30; //spacing vertically
+                const x1 = col * 30; // Spacing horizontally
+                const y1 = row * 25; //spacing vertically
                 const alien = new Alien(alienTexture, x1, y1);
 
                 this.aliens.push(alien);

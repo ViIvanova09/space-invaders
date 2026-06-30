@@ -9,6 +9,8 @@ import { SheetTexture } from "./SheetTexture";
 import { PlayerHealthBar } from "./PlayerHealthBar";
 import { StartGameScreen } from "./StartGameScreen";
 import { GameOverScreen } from "./GameOverScreen";
+import { VictoryScreen } from "./VictoryScreen";
+import { Score } from "./Score";
 import { Game } from "./Game";
 import { gsap } from "gsap";
 
@@ -28,6 +30,7 @@ console.log(
     let game: Game;
     let health: number;
     let playerLives: number;
+    let score: Score;
     let healthBar: PlayerHealthBar;
 
     //await window load
@@ -41,6 +44,7 @@ console.log(
         bullet = new Bullet();
         app = new Application();
         healthBar = new PlayerHealthBar();
+        score = new Score();
         gameLevel = 1;
         health = 50;
         playerLives = 3;
@@ -63,6 +67,7 @@ console.log(
 
         const startGameScreen = new StartGameScreen();
         const gameOverScreen = new GameOverScreen();
+        const victoryScreen = new VictoryScreen();
 
         spaceShip = new SpaceShip(shipTexture, app);
 
@@ -113,6 +118,7 @@ console.log(
         }
 
         game.world.visible = false;
+        victoryScreen.visible = false;
         gameOverScreen.visible = false;
         startGameScreen.visible = true;
 
@@ -184,6 +190,7 @@ console.log(
                     game.aliens[i] = null;
                     game.world.removeChild(bullet.shipBullet);
                     bullet.shipBullet = null;
+                    score.addScore();
 
                     return;
                 }
@@ -234,7 +241,10 @@ console.log(
             game.world.removeChild(game.aliensContainer);
             game.world.removeChild(spaceShip);
             spaceShip.removeShip();
+            bullet.shipBullet?.parent?.removeChild(bullet.shipBullet); // the perent is the game.world container
+            bullet.shipBullet = null;
             window.removeEventListener("keydown", playerFireBullet);
+
             game.removeAliensGroup();
         }
         function playerHealthNav() {
@@ -253,11 +263,16 @@ console.log(
                 showGameOver();
             }
         }
-
+        // function showVictoryScreen() {
+        //     if (game.aliens.length === 0) {
+        //         victoryScreen.visible = true;
+        //     }
+        // }
         app.stage.addChild(game.world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
         app.stage.addChild(startGameScreen);
         game.world.addChild(healthBar);
         game.world.addChild(spaceShip);
+        game.world.addChild(score);
         game.createAliensGroup(alienTexture);
         game.world.addChild(game.aliensContainer);
 
@@ -289,6 +304,7 @@ console.log(
         playerLives = 3;
 
         healthBar.resetBar();
+        score.clearScore();
 
         function playerFireBullet(e: KeyboardEvent) {
             if (gameOver) {
