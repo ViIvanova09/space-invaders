@@ -26,6 +26,7 @@ console.log(
     let bullet: Bullet;
     let spaceShip: SpaceShip;
     let gameOver: boolean;
+    let victory: boolean;
     let gameLevel: number;
     let game: Game;
     let health: number;
@@ -102,6 +103,7 @@ console.log(
 
         startGameScreen.startButton.on("pointerdown", startGame);
         gameOverScreen.restartButton.on("pointerdown", restartGame);
+        victoryScreen.restartButton.on("pointerdown", restartGame);
 
         window.addEventListener("keyup", (e) => {
             spaceShip.keyUpMovement(e.key);
@@ -191,8 +193,16 @@ console.log(
                     game.world.removeChild(bullet.shipBullet);
                     bullet.shipBullet = null;
                     score.addScore();
+                    console.error("aliens length", game.aliens.length);
+                    console.error("alien", oneEnemy);
 
                     return;
+                }
+
+                if (game.aliens.every((alien) => alien === null)) {
+                    console.error('fkjsf');
+                    
+                    showVictoryScreen();
                 }
             }
         }
@@ -247,6 +257,7 @@ console.log(
 
             game.removeAliensGroup();
         }
+
         function playerHealthNav() {
             playerLives--;
 
@@ -263,11 +274,13 @@ console.log(
                 showGameOver();
             }
         }
-        // function showVictoryScreen() {
-        //     if (game.aliens.length === 0) {
-        //         victoryScreen.visible = true;
-        //     }
-        // }
+
+        function showVictoryScreen() {
+            victory = true;
+            app.stage.addChild(victoryScreen);
+            victoryScreen.visible = true;
+        }
+
         app.stage.addChild(game.world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
         app.stage.addChild(startGameScreen);
         game.world.addChild(healthBar);
@@ -283,11 +296,11 @@ console.log(
                 return;
             }
 
-            game.enemiesMovement();
+            // game.enemiesMovement();
             spaceShip.shipMovement(app);
             bullet.moveShipBullet(game.world);
             bullet.moveEnemyBullet(game.world);
-            enemyBulletSystem();
+            // enemyBulletSystem();
             shipEnemyCollision();
             enemyContainerCollision();
             enemyPlayerCollision();
@@ -322,6 +335,7 @@ console.log(
         game.world.addChild(game.aliensContainer);
         game.createAliensGroup(alienTexture);
         gameOver = false;
+        victory = false;
     }
 
     function resizeCanvas(): void {

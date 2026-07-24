@@ -36,6 +36,7 @@ export class Game {
 
                 this.aliens.push(alien);
                 this.aliensContainer.addChild(alien);
+                
             }
         }
     }
