@@ -26,6 +26,7 @@ console.log(
     let bullet: Bullet;
     let spaceShip: SpaceShip;
     let gameOver: boolean;
+    let victory: boolean;
     let gameLevel: number;
     let game: Game;
     let health: number;
@@ -89,19 +90,22 @@ console.log(
                 game.world.visible = true;
                 app.stage.removeChild(startGameScreen);
                 gameOver = false;
+                victory = false;
             }
         }
 
         function restartGame() {
-            if (gameOverScreen.visible) {
+            if (gameOverScreen.visible || victoryScreen.visible) {
                 gameOverScreen.visible = false;
-
+                victoryScreen.visible = false;
+                
                 reset();
             }
         }
 
         startGameScreen.startButton.on("pointerdown", startGame);
         gameOverScreen.restartButton.on("pointerdown", restartGame);
+        victoryScreen.restartButton.on("pointerdown", restartGame);
 
         window.addEventListener("keyup", (e) => {
             spaceShip.keyUpMovement(e.key);
@@ -191,9 +195,20 @@ console.log(
                     game.world.removeChild(bullet.shipBullet);
                     bullet.shipBullet = null;
                     score.addScore();
+                    const allAliensDeath = game.aliens.every((alien) => alien === null)
+
+                    if (allAliensDeath) {
+
+                        showVictoryScreen();
+                    }
+
+                    console.error("aliens length", game.aliens.length);
+                    console.error("alien", oneEnemy);
 
                     return;
                 }
+
+    
             }
         }
 
@@ -247,6 +262,7 @@ console.log(
 
             game.removeAliensGroup();
         }
+
         function playerHealthNav() {
             playerLives--;
 
@@ -263,11 +279,22 @@ console.log(
                 showGameOver();
             }
         }
-        // function showVictoryScreen() {
-        //     if (game.aliens.length === 0) {
-        //         victoryScreen.visible = true;
-        //     }
-        // }
+
+        function showVictoryScreen() {
+            victory = true;
+            app.stage.addChild(victoryScreen);
+            victoryScreen.visible = true;
+            startGameScreen.visible = false;
+            game.world.removeChild(game.aliensContainer);
+            game.world.removeChild(spaceShip);
+            spaceShip.removeShip();
+            bullet.shipBullet?.parent?.removeChild(bullet.shipBullet); // the perent is the game.world container
+            bullet.shipBullet = null;
+            window.removeEventListener("keydown", playerFireBullet);
+
+            game.removeAliensGroup();
+        }
+
         app.stage.addChild(game.world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
         app.stage.addChild(startGameScreen);
         game.world.addChild(healthBar);
@@ -277,17 +304,18 @@ console.log(
         game.world.addChild(game.aliensContainer);
 
         gameOver = true;
+        victory = true;
 
         app.ticker.add(() => {
-            if (gameOver) {
+            if (gameOver || victory) {
                 return;
             }
-
-            game.enemiesMovement();
+            
+            //game.enemiesMovement();
             spaceShip.shipMovement(app);
             bullet.moveShipBullet(game.world);
             bullet.moveEnemyBullet(game.world);
-            enemyBulletSystem();
+            //enemyBulletSystem();
             shipEnemyCollision();
             enemyContainerCollision();
             enemyPlayerCollision();
@@ -322,6 +350,7 @@ console.log(
         game.world.addChild(game.aliensContainer);
         game.createAliensGroup(alienTexture);
         gameOver = false;
+        victory = false;
     }
 
     function resizeCanvas(): void {
