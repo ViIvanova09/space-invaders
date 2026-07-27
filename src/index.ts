@@ -90,13 +90,15 @@ console.log(
                 game.world.visible = true;
                 app.stage.removeChild(startGameScreen);
                 gameOver = false;
+                victory = false;
             }
         }
 
         function restartGame() {
-            if (gameOverScreen.visible) {
+            if (gameOverScreen.visible || victoryScreen.visible) {
                 gameOverScreen.visible = false;
-
+                victoryScreen.visible = false;
+                
                 reset();
             }
         }
@@ -193,17 +195,20 @@ console.log(
                     game.world.removeChild(bullet.shipBullet);
                     bullet.shipBullet = null;
                     score.addScore();
+                    const allAliensDeath = game.aliens.every((alien) => alien === null)
+
+                    if (allAliensDeath) {
+
+                        showVictoryScreen();
+                    }
+
                     console.error("aliens length", game.aliens.length);
                     console.error("alien", oneEnemy);
 
                     return;
                 }
 
-                if (game.aliens.every((alien) => alien === null)) {
-                    console.error('fkjsf');
-                    
-                    showVictoryScreen();
-                }
+    
             }
         }
 
@@ -279,6 +284,15 @@ console.log(
             victory = true;
             app.stage.addChild(victoryScreen);
             victoryScreen.visible = true;
+            startGameScreen.visible = false;
+            game.world.removeChild(game.aliensContainer);
+            game.world.removeChild(spaceShip);
+            spaceShip.removeShip();
+            bullet.shipBullet?.parent?.removeChild(bullet.shipBullet); // the perent is the game.world container
+            bullet.shipBullet = null;
+            window.removeEventListener("keydown", playerFireBullet);
+
+            game.removeAliensGroup();
         }
 
         app.stage.addChild(game.world); // This is the main container that holds everything in the game. And everything you want to see must be added to the stage.
@@ -290,17 +304,18 @@ console.log(
         game.world.addChild(game.aliensContainer);
 
         gameOver = true;
+        victory = true;
 
         app.ticker.add(() => {
-            if (gameOver) {
+            if (gameOver || victory) {
                 return;
             }
-
-            // game.enemiesMovement();
+            
+            //game.enemiesMovement();
             spaceShip.shipMovement(app);
             bullet.moveShipBullet(game.world);
             bullet.moveEnemyBullet(game.world);
-            // enemyBulletSystem();
+            //enemyBulletSystem();
             shipEnemyCollision();
             enemyContainerCollision();
             enemyPlayerCollision();

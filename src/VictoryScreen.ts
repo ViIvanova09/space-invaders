@@ -23,7 +23,7 @@ export class VictoryScreen extends Container {
             style: {
                 fontFamily: "Arial",
                 fontSize: 23,
-                fill: 0x000000,
+                fill: 0x00ff00,
                 align: "center",
             },
         });
@@ -32,6 +32,7 @@ export class VictoryScreen extends Container {
         this.restartButton.y = GAME_HEIGHT / 2 - 90;
         this.restartButton.interactive = true;
         this.restartButton.cursor = "pointer";
+        this.victoryText.anchor.set(0.5);
         this.victoryText.x = GAME_WIDTH / 2;
         this.victoryText.y = GAME_HEIGHT / 2 - 160;
         this.subtitle.anchor.set(0.5);
